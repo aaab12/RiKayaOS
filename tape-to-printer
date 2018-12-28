@@ -6,6 +6,14 @@
     "bootstrap-rom": "/usr/local/share/umps2/coreboot.rom.umps",
     "clock-rate": 1,
     "devices": {
+        "printer0": {
+            "enabled": true,
+            "file": "print0.umps"
+        },
+        "printer1": {
+            "enabled": true,
+            "file": "print1.umps"
+        },
         "tape0": {
             "enabled": true,
             "file": "tape0.umps"
@@ -21,14 +29,6 @@
         "tape3": {
             "enabled": true,
             "file": "tape3.umps"
-        },
-        "printer0": {
-            "enabled": true,
-            "file": "print0.umps"
-        },
-        "printer1": {
-            "enabled": true,
-            "file": "print1.umps"
         },
         "terminal0": {
             "enabled": false,
