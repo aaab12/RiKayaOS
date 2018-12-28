@@ -9,8 +9,8 @@
 #define ST_READY		  1
 #define ST_BUSY			  3
 
-#define CMD_ACK			  1
 #define CMD_RESET		  0
+#define CMD_ACK			  1
 #define CMD_SKIPBLK		2
 #define CMD_READBLK		3
 #define CMD_BACKBLK		4

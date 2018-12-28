@@ -10,9 +10,25 @@
             "enabled": true,
             "file": "tape0.umps"
         },
+        "tape1": {
+            "enabled": true,
+            "file": "tape1.umps"
+        },
+        "tape2": {
+            "enabled": true,
+            "file": "tape2.umps"
+        },
+        "tape3": {
+            "enabled": true,
+            "file": "tape3.umps"
+        },
         "printer0": {
             "enabled": true,
             "file": "print0.umps"
+        },
+        "printer1": {
+            "enabled": true,
+            "file": "print1.umps"
         },
         "terminal0": {
             "enabled": false,
