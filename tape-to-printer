@@ -6,13 +6,13 @@
     "bootstrap-rom": "/usr/local/share/umps2/coreboot.rom.umps",
     "clock-rate": 1,
     "devices": {
-        "printer0": {
-            "enabled": true,
-            "file": "/home/mmarcaccini/Sistemi Operativi/Progetto/Fase0/hello-umps/HelloTape/print0.umps"
-        },
         "tape0": {
             "enabled": true,
-            "file": "/home/mmarcaccini/Sistemi Operativi/Progetto/Fase0/hello-umps/HelloTape/tape0.umps"
+            "file": "tape0.umps"
+        },
+        "printer0": {
+            "enabled": true,
+            "file": "print0.umps"
         },
         "terminal0": {
             "enabled": false,

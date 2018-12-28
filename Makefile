@@ -1,7 +1,9 @@
 # Cross toolchain variables
 # If these are not in your path, you can make them absolute.
 XT_PRG_PREFIX = mipsel-linux-gnu-
+# Compiler
 CC = $(XT_PRG_PREFIX)gcc
+# linker
 LD = $(XT_PRG_PREFIX)ld
 
 # uMPS2-related paths
@@ -35,7 +37,7 @@ all : kernel.core.umps
 kernel.core.umps : kernel
 	umps2-elf2umps -k $<
 
-kernel : main.o tapeRec.o printer.o crtso.o libumps.o
+kernel : main.o tape.o printer.o crtso.o libumps.o
 	$(LD) -o $@ $^ $(LDFLAGS)
 
 clean :
