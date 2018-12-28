@@ -13,4 +13,3 @@ kernel.stab.umps
 # Files automatically created during boot
 term0.umps
 print0.umps
-print1.umps
