@@ -10,7 +10,7 @@
 static void halt(void);
 void tirulero_maker_1(dtpreg_t *names, dtpreg_t *refrain, dtpreg_t *words, dtpreg_t *printer);
 void tirulero_maker_2(dtpreg_t *song, dtpreg_t *printer);
-void AllTogether(char *buffer, dtpreg_t *nameOfTape, dtpreg_t *nameOfPrinter, int nRewind, int nSkip, int nBack);
+void sing_all_together(char *buffer, dtpreg_t *tape, dtpreg_t *printer, int n_rewind, int n_skip, int n_back);
 
 void main(void)
 {
@@ -31,8 +31,6 @@ void main(void)
 				halt();
 }
 
-
-
 static void halt(void)
 {
 				WAIT();
@@ -45,28 +43,28 @@ void tirulero_maker_1(dtpreg_t *names, dtpreg_t *refrain, dtpreg_t *words, dtpre
 				char buffer[MAXSIZE];
 
 				/* First occurrence of the names and rewind */
-				AllTogether(buffer, names, printer, 1, 0, 0);
+				sing_all_together(buffer, names, printer, 1, 0, 0);
 
 				/* First stanza of the song */
-				AllTogether(buffer, words, printer, 0, 0, 0);
+				sing_all_together(buffer, words, printer, 0, 0, 0);
 
 				/* First occurrence of the refrain and rewind */
-				AllTogether(buffer, refrain, printer, 1, 0, 0);
+				sing_all_together(buffer, refrain, printer, 1, 0, 0);
 
 				/* Second stanza of the song */
-				AllTogether(buffer, words, printer, 0, 0, 0);
+				sing_all_together(buffer, words, printer, 0, 0, 0);
 
 				/* Second occurrence of the names */
-				AllTogether(buffer, names, printer, 0, 0, 0);
+				sing_all_together(buffer, names, printer, 0, 0, 0);
 
 				/* Third stanza of the song */
-				AllTogether(buffer, words, printer, 0, 0, 0);
+				sing_all_together(buffer, words, printer, 0, 0, 0);
 
 				/* Second occurrence of the refrain and rewind */
-				AllTogether(buffer, refrain, printer, 1, 0, 0);
-				
+				sing_all_together(buffer, refrain, printer, 1, 0, 0);
+
 				/* Third occurrence of the refrain */
-				AllTogether(buffer, refrain, printer, 0, 0, 0);
+				sing_all_together(buffer, refrain, printer, 0, 0, 0);
 }
 
 void tirulero_maker_2(dtpreg_t *song, dtpreg_t *printer)
@@ -74,53 +72,54 @@ void tirulero_maker_2(dtpreg_t *song, dtpreg_t *printer)
 				char buffer[MAXSIZE];
 
 				/* First block with the names and skip the block with the refrain */
-				AllTogether(buffer, song, printer, 0, 1, 0);
+				sing_all_together(buffer, song, printer, 0, 1, 0);
 
 				/* Third block with the first stanza and back two blocks at the beginning of the block with the refrain */
-				AllTogether(buffer, song, printer, 0, 0, 2);
+				sing_all_together(buffer, song, printer, 0, 0, 2);
 
 				/* Second block with the refrain and skip the third block */
-				AllTogether(buffer, song, printer, 0, 1, 0);
+				sing_all_together(buffer, song, printer, 0, 1, 0);
 
 				/* The fourth block with the second stanza and rewind the entire tape */
-				AllTogether(buffer, song, printer, 1, 0, 0);
+				sing_all_together(buffer, song, printer, 1, 0, 0);
 
 				/* First block with the names and skip the block with the refrain and the other two blocks
 					 with the first and the second stanza */
-				AllTogether(buffer, song, printer, 0, 3, 0); 
+				sing_all_together(buffer, song, printer, 0, 3, 0);
 
 				/* The fifth block with the third stanza, rewind the entire tape and skip the block with the names */
-				AllTogether(buffer, song, printer, 1, 1, 0);
+				sing_all_together(buffer, song, printer, 1, 1, 0);
 
 				/* Second block with the refrain and back one block at the beginning of the block with the refrain*/
-				AllTogether(buffer, song, printer, 0, 0, 1);
+				sing_all_together(buffer, song, printer, 0, 0, 1);
 
 				/* Second block with the refrain */
-				AllTogether(buffer, song, printer, 0, 0, 0);
+				sing_all_together(buffer, song, printer, 0, 0, 0);
 }
 
-void AllTogether(char *buffer, dtpreg_t *nameOfTape, dtpreg_t *nameOfPrinter, int nRewind, int nSkip, int nBack)
+void sing_all_together(char *buffer, dtpreg_t *tape, dtpreg_t *printer, int n_rewind, int n_skip, int n_back)
 {
-				tape_read(buffer, nameOfTape);
-				print_puts(buffer, nameOfPrinter);
+				tape_read(buffer, tape);
+				print_puts(buffer, printer);
 
 				/* Rewind the entire tape */
-				while(nRewind) 
+				while(n_rewind)
 				{
-					tape_rewind(nameOfTape);
-					nRewind--;
+					tape_rewind(tape);
+					n_rewind--;
 				}
-				/* Skip the block with the names */
-				while(nSkip)
+
+				/* Skip a block */
+				while(n_skip)
 				{
-					tape_skip(nameOfTape);
-					nSkip--;
-				}			
-				/* Back one block at the beginning of the block with the tape */		
-				while(nBack) 
+					tape_skip(tape);
+					n_skip--;
+				}
+
+				/* Back one block */
+				while(n_back)
 				{
-					tape_back(nameOfTape);
-					nBack--;
+					tape_back(tape);
+					n_back--;
 				}
 }
-	
