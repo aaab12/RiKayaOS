@@ -2,7 +2,7 @@
 #define _TYPES11_H
 
 #include <umps/types.h>
-#include <listx.h>
+#include "listx.h"
 
 typedef unsigned int memaddr;
 
@@ -17,7 +17,7 @@ typedef struct pcb_t {
 				p_sib;
 
 	/* processor state, etc */
-	state_t       		p_s;     
+	state_t       		p_s;
 
 	/* process priority */
 	int			priority;
