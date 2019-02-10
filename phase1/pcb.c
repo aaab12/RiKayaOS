@@ -233,7 +233,7 @@ pcb_t *outChild(pcb_t *p) {
 // USER defined functions
 
 // funzione inizializzazione struttura pcb_t
-void inizializzapcb(struct pcb_t* p){
+void inizializzapcb(struct pcb_t* p) {
   p->p_next.next = NULL;
   p->p_next.prev = NULL;
   p->p_parent = NULL;
@@ -241,15 +241,19 @@ void inizializzapcb(struct pcb_t* p){
   p->p_child.prev = NULL;
   p->p_sib.next = NULL;
   p->p_sib.prev = NULL;
-	p->p_s.entry_hi = 0;
-	p->p_s.cause = 0;
-	p->p_s.status = 0;
-	p->p_s.pc_epc = 0;
-	for(int i=0; i<29; i++)
-		p->p_s.gpr[i] = 0;
-	p->p_s.hi = 0;
-	p->p_s.lo = 0;
+	initPcbState(&p->p_s);
   p->priority = 0;
   p->p_semkey = NULL;
+}
 
+// Funzione inizializzazione stato dei pcb
+void initPcbState(state_t* state) {
+	state->entry_hi = 0;
+	state->cause = 0;
+	state->status = 0;
+	state->pc_epc = 0;
+	for(int i=0; i<STATE_GPR_LEN; i++)
+		state->gpr[i] = 0;
+	state->hi = 0;
+	state->lo = 0;
 }

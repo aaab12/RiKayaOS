@@ -5,6 +5,7 @@
 
 //USER
 void inizializzapcb(struct pcb_t* p);
+void initPcbState(state_t* state);
 
 /* PCB handling functions */
 
