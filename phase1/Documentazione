@@ -56,7 +56,7 @@ Si e´ cercato di sfruttare il piu' possibile le macro del file listx.h per migl
 piu´ ripetitivi o con un forte significato logico in vista anche di una migliore riusabilita´ del codice.
 Sono possibili esempi di questo aspetto la funzione list_head* list_del_notcirc(list_head *p) la quale aiuta nella rimozione di un elemento da una
 lista senza sentinella, bidirezionale non circolare;
-Le funzioni inizializzapcb, inizializzasem o inizializzastate_t per l'inizializzazione delle strutture;
+Le funzioni inizializzapcb, inizializzasem o initPcbState per l'inizializzazione delle strutture;
 E le funzioni void del_tree(pcb_t* p) e void recursive(pcb_t *root, pcb_t *realroot) per la visita di tutti i processi che hanno come avo p, questa funzione
 infatti si concentra sulla visita di questi elementi mentre la rimozione di questi ultimi viene affidata ad una funzione precedentemente definita,
 pcb_t* outBlocked(pcb_t *p).
