@@ -120,7 +120,7 @@ void delTree(pcb_t *p) {
         return;                                             //se p non ha figli ho finito
     list_head* scan;                                        //itero sulla lista dei figli di p
     list_for_each(scan, &p->p_child) {
-        outBlocked(container_of(scan, pcb_t, p_sib));       //rimuovo il pcb di ogni figlio dalla coda del semaforo in cui è bloccato nelle liste di tutti i fratelli
+        outBlocked(container_of(scan, pcb_t, p_sib));       //rimuovo il pcb di ogni figlio dalla coda del semaforo in cui è bloccato
         delTree(container_of(scan, pcb_t, p_sib));          //itero ricorsivamente sulla lista dei figli di ogni figlio di p
     }          
 }
