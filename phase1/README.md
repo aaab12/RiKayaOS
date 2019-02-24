@@ -1,3 +1,3 @@
  COMPILAZIONE con:
  
- make -f Makefile
+ make 
