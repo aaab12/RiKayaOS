@@ -3,14 +3,13 @@
 #include <umps/libumps.h>
 
 #include "pcb.h"
-#include "asl.h"
 
 // pcbFree_table: array dei pcb free
-struct pcb_t pcbFree_table[MAXPROC];
+HIDDEN struct pcb_t pcbFree_table[MAXPROC];
 // pcbfree_h: sentinella pcbFree
-struct list_head pcbfree_h;
+HIDDEN struct list_head pcbfree_h;
 // pcbFree: puntatore alla lista dei pcb free
-struct list_head* pcbFree = &pcbfree_h;
+HIDDEN struct list_head* pcbFree = &pcbfree_h;
 
 /* PCB HANDLING FUNCTIONS */
 
