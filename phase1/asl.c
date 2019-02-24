@@ -6,16 +6,16 @@
 #include "asl.h"
 
 // semd_table: array dei semafori free
-struct semd_t semd_table[MAXPROC];
+HIDDEN struct semd_t semd_table[MAXPROC];
 // semdFree_h: sentinella semdFree
-struct list_head semdFree_h;
+HIDDEN struct list_head semdFree_h;
 // semdFree: puntatore alla lista dei semafori free
-struct list_head* semdFree = &semdFree_h;
+HIDDEN struct list_head* semdFree = &semdFree_h;
 
 // semd_h: sentinella ASL
-struct list_head semd_h;
+HIDDEN struct list_head semd_h;
 // ASL lista semafori attivi
-struct list_head* ASL = &semd_h;
+HIDDEN struct list_head* ASL = &semd_h;
 
 /* ASL HANDLING FUNCTIONS */
 
