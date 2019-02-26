@@ -1,12 +1,19 @@
-//Documentazione
+Authors:
+Marco Dong
+Mattia Biondi
+Maurizio Marcaccini
+Riccardo Plazzi 
 
+//Relazione Progetto SO Fase1
 La scelta implementativa sia per quanto riguarda le strutture di dati sia per le funzioni relative a pcb e semafori segue pressoche' la descrizione del file
 di istruzioni in allegato alla fase1 relativa al progetto del corso di sistemi operativi.
 
 //PCBs
 
-//PCBs queues
+Il PCB è inizializzato con i campi p_parent, p_sib.next, p_sib.prev, p_next.next e p_next.prev a NULL 
+il campo p_child viene inizializzato con INIT_LIST_HEAD(&p->p_child) che inizializza la sentinella della lista dei figli che punta a se stessa (lista vuota)
 
+//PCBs QUEUES
 
 La lista pcbFree e`una lista circolare bidirezioanle con sentinella (pcbFree_h) e il campo struct list_head p_next della struct pcb_t e`
 usato come concatenatore dei vari pcb_t fra di loro e con la sentinella, anch'essa di tipo struct list_head
@@ -15,38 +22,31 @@ La circolarita' della lista semplifica aspetti come l'inserimento o la rimozione
 
 L'uso della sentinella e` stato mantenuto per la leggibilita´ del codice
 
-//PCBs trees
+//PCBs TREES
 
-
-I PCB posso essere organizzati ad albero.
-Ogni PCB genitore attraverso il proprio campo p_child.next punta esclusivamente al campo p_child del primo figlio e nel caso ne abbia piu d'uno,
-il primo figlio sara'il primo elemento di una lista di PCB fratelli concatenata attraverso il campo struct list_head p_sib bidirezionale non circolare,
-senza sentinella
-
-Partendo da un PCB si puo` quindi anche pensare di scorrere una "lista dei primogeniti" e siccome l'inserimento di un PCB fra i figli di un altro
-avviene in coda, il ruolo del primogenito e´ quello del piu` vecchio PCB inserito fra i figli del padre, questa lista risulta essere
-anch'essa bidirezionale non circolare, senza sentinella
+I PCB possono essere organizzati ad albero.
+Ogni PCB genitore attraverso il proprio campo p_child punta alla sentinella della lista dei suoi figli concatenati tra loro dal campo p_sib,
+il primo figlio sara' il primo elemento dopo la sentinella ovvero p_child.next
 
 Ogni PCB punta al proprio padre con un campo specifico per questo scopo struct pcb_t* p_parent
 
 
-//Semafori
-
+//SEMAFORI
 
 La lista semdFree dei semafori liberi e`una lista circolare bidirezioanle con sentinella e il campo struct list_head s_next della struct semd_t e`
 usato come concatenatore dei vari semd_t fra di loro e con la sentinella, anch'essa di tipo struct list_head
 
 
-//ASL
+//ASL: lista dei semafori attivi
 
 La lista dei semafori attivi ASL e`una lista circolare bidirezioanle con sentinella (semdFree_h) e il campo struct list_head s_next della struct semd_t e`
 usato come concatenatore dei vari semd_t fra di loro e con la sentinella
 
 I processi bloccati in coda ad un semaforo formano una lista. Ogni semaforo punta al primo elemento di questa lista attraverso il proprio campo
-struct list_head s_procQ.next; e il primo PCB bloccato su un samaforo punta al successivo attraverso il proprio campo struct list_head p_next.next.
+struct list_head s_procQ.next; e il primo PCB bloccato su un semaforo punta al successivo attraverso il proprio campo struct list_head p_next.next.
 In questo caso la lista dei processi bloccati su un semaforo e` bidirezionale, non circolare senza sentinella
 
-Ogni PCB specifica il semaforo su cui e` bloccato con un campo specifico per questo scopo, int *s_key, che punta alla stessa chiave che identifica il semforo
+Ogni PCB specifica il semaforo su cui e` bloccato con un campo specifico per questo scopo, int *s_key, che punta alla stessa chiave che identifica il semaforo
 su cui il pcb e' bloccato
 
 
@@ -54,9 +54,4 @@ su cui il pcb e' bloccato
 
 Si e´ cercato di sfruttare il piu' possibile le macro del file listx.h per migliorare la leggibilita' del codice, e di definire funzioni per gli aspetti
 piu´ ripetitivi o con un forte significato logico in vista anche di una migliore riusabilita´ del codice.
-Sono possibili esempi di questo aspetto la funzione list_head* list_del_notcirc(list_head *p) la quale aiuta nella rimozione di un elemento da una
-lista senza sentinella, bidirezionale non circolare;
-Le funzioni inizializzapcb, inizializzasem o initPcbState per l'inizializzazione delle strutture;
-E le funzioni void del_tree(pcb_t* p) e void recursive(pcb_t *root, pcb_t *realroot) per la visita di tutti i processi che hanno come avo p, questa funzione
-infatti si concentra sulla visita di questi elementi mentre la rimozione di questi ultimi viene affidata ad una funzione precedentemente definita,
-pcb_t* outBlocked(pcb_t *p).
+

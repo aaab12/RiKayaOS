@@ -4,10 +4,7 @@
 #include "types_rikaya.h"
 
 //USER
-list_head* list_del_notcirc(list_head *p);
-void inizializzasem(struct semd_t* p);
-void recursive(pcb_t *root, pcb_t *realroot);
-void del_tree(pcb_t* p);
+void delTree(pcb_t* p);
 
 /* ASL handling functions */
 semd_t* getSemd(int *key);
