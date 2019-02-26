@@ -6,16 +6,16 @@
 #include "asl.h"
 
 // semd_table: array dei semafori free
-struct semd_t semd_table[MAXPROC];
+HIDDEN struct semd_t semd_table[MAXPROC];
 // semdFree_h: sentinella semdFree
-struct list_head semdFree_h;
+HIDDEN struct list_head semdFree_h;
 // semdFree: puntatore alla lista dei semafori free
-struct list_head* semdFree = &semdFree_h;
+HIDDEN struct list_head* semdFree = &semdFree_h;
 
 // semd_h: sentinella ASL
-struct list_head semd_h;
+HIDDEN struct list_head semd_h;
 // ASL lista semafori attivi
-struct list_head* ASL = &semd_h;
+HIDDEN struct list_head* ASL = &semd_h;
 
 /* ASL HANDLING FUNCTIONS */
 
@@ -29,7 +29,7 @@ semd_t* getSemd(int *key) {
 	  if(scansem->s_key == key)
 		return scansem;
 	}
-	return NULL;	
+	return NULL;
   }
 
 /* Inizializzazione struttura ASL contenente tutti gli elementi della semdTable */
@@ -66,7 +66,7 @@ int insertBlocked(int *key,pcb_t* p) {
   return 0;
 }
 
-/* Ritorna il primo PCB della coda dei processi bloccati associata al semaforo di chiave 
+/* Ritorna il primo PCB della coda dei processi bloccati associata al semaforo di chiave
  * key presente nella ASL. Se key non presente restituisce NULL altrimenti restituisce
  * il PCB rimosso. Se la coda del semaforo si svuota il semaforo è aggiunto alla semdFree */
 pcb_t* removeBlocked(int *key){
@@ -82,7 +82,7 @@ pcb_t* removeBlocked(int *key){
       list_del(&ptr->s_next);
       list_add_tail(&ptr->s_next, semdFree);
     }
-    return p;											// ritorno il PCB rimosso 
+    return p;											// ritorno il PCB rimosso
 }
 
 /* Rimuove il PCB p dalla coda del semaforo su cui è bloccato (key = p_semdkey)
@@ -122,9 +122,9 @@ pcb_t* headBlocked(int *key) {
  * Inoltre elimina con una previsita dell'albero radicato in p tutti i processi
  * dalle eventuali code dei semafori in cui sono bloccati */
 void outChildBlocked(pcb_t *p) {
-  pcb_t *rad = outBlocked(p); 
+  pcb_t *rad = outBlocked(p);
   if(rad != NULL){
-    // p è stato rimosso e itero ricorsivamente su ogni suo discendente 
+    // p è stato rimosso e itero ricorsivamente su ogni suo discendente
      delTree(p);
   }
 }
@@ -139,7 +139,5 @@ void delTree(pcb_t *p) {
     list_for_each(scan, &p->p_child) {
         outBlocked(container_of(scan, pcb_t, p_sib));       //rimuovo il pcb di ogni figlio dalla coda del semaforo in cui è bloccato nelle liste di tutti i fratelli
         delTree(container_of(scan, pcb_t, p_sib));          //itero ricorsivamente sulla lista dei figli di ogni figlio di p
-    }          
+    }
 }
-
-

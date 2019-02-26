@@ -3,20 +3,19 @@
 #include <umps/libumps.h>
 
 #include "pcb.h"
-#include "asl.h"
 
 // pcbFree_table: array dei pcb free
-struct pcb_t pcbFree_table[MAXPROC];
+HIDDEN struct pcb_t pcbFree_table[MAXPROC];
 // pcbfree_h: sentinella pcbFree
-struct list_head pcbfree_h;
+HIDDEN struct list_head pcbfree_h;
 // pcbFree: puntatore alla lista dei pcb free
-struct list_head* pcbFree = &pcbfree_h;
+HIDDEN struct list_head* pcbFree = &pcbfree_h;
 
 /* PCB HANDLING FUNCTIONS */
 
 /* PCB free list handling functions */
 
-/* Inizializzazione della lista dei PCB liberi in modo da contenere tutti gli 
+/* Inizializzazione della lista dei PCB liberi in modo da contenere tutti gli
  * elementi della pcbFree_table */
 void initPcbs() {
 	INIT_LIST_HEAD(pcbFree);
@@ -44,7 +43,7 @@ void freePcb(pcb_t * p) {
  * Restituisce NULL se la pcbFree è vuota */
 pcb_t* allocPcb() {
 	if(list_empty(pcbFree)) {
-		return NULL;			
+		return NULL;
 	} else {															// ptrp: ultimo elemento della pcbFree
 		struct list_head* ptr = pcbFree->prev;
 		struct pcb_t * ptrp = container_of(ptr, pcb_t, p_next);
@@ -66,12 +65,12 @@ int emptyProcQ(struct list_head *head) {
   return list_empty(head);
 }
 
-/* Inserisce il PCB puntato da p nella lista puntata da head in 
+/* Inserisce il PCB puntato da p nella lista puntata da head in
  * base alla priorità del processo: in testa priorità più alta */
 void insertProcQ(struct list_head *head, pcb_t *p) {
-	if(emptyProcQ(head) || headProcQ(head)->priority < p->priority)		//inserisco il pcb in una lista vuota o in testa 
+	if(emptyProcQ(head) || headProcQ(head)->priority < p->priority)		//inserisco il pcb in una lista vuota o in testa
 		list_add(&p->p_next, head);										//a una lista di pcb tutti con priorità minore
-	else {							//itera dal fondo della lista per trovare la sua collocazione in base alla priorità	
+	else {							//itera dal fondo della lista per trovare la sua collocazione in base alla priorità
 		struct list_head* scan;
 		list_for_each_prev(scan, head) {
 			if((container_of(scan, pcb_t, p_next))->priority >= p->priority) {
@@ -127,10 +126,10 @@ int emptyChild(pcb_t *p) {
 /* Inserisce il PCB p come ultimo figlio del PCB prnt */
 void insertChild(pcb_t *prnt, pcb_t *p) {
 	p->p_parent = prnt;
-	list_add_tail(&(p->p_sib), &(prnt->p_child));				//aggiungo il child in fondo ai fratelli 
+	list_add_tail(&(p->p_sib), &(prnt->p_child));				//aggiungo il child in fondo ai fratelli
 }																	//concatenando alla lista dei figli di prnt il campo p_sib di p
 
-/* Rimuove il primo figlio del PCB prnt e lo restituisce 
+/* Rimuove il primo figlio del PCB prnt e lo restituisce
  * senza padre. Restituisce NULL se prnt non ha figli */
 pcb_t *removeChild(pcb_t *p) {
 	if(emptyChild(p))												//p non ha figli
@@ -139,16 +138,16 @@ pcb_t *removeChild(pcb_t *p) {
 	pcb_t* first = container_of(children->next, pcb_t, p_sib);		//pcb primo figlio
 	list_del(&first->p_sib);										//eliminazione del primo figlio (tolgo il collegamento ai fratelli)
 	first->p_parent = NULL;											//aggiorno il suo parent perchè non è più figlio
-	return first;		
+	return first;
 }
-	
-/* Rimuove  il PCB p dalla lista dei figli di suo padre 
+
+/* Rimuove  il PCB p dalla lista dei figli di suo padre
  * Se il padre è NULL restituisce NULL */
 pcb_t *outChild(pcb_t *p) {
-	if(p->p_parent == NULL) 
-		return NULL;		//p è senza padre					
-	list_del(&p->p_sib);	//elimino il puntatore (&p->p_sib) del pcb p dalla lista dei suoi fratelli (quindi elimino il pcb dalla lista dei figli del padre) 
-	p->p_parent = NULL;		//aggiorno il suo parent perchè non è più figlio 
+	if(p->p_parent == NULL)
+		return NULL;		//p è senza padre
+	list_del(&p->p_sib);	//elimino il puntatore (&p->p_sib) del pcb p dalla lista dei suoi fratelli (quindi elimino il pcb dalla lista dei figli del padre)
+	p->p_parent = NULL;		//aggiorno il suo parent perchè non è più figlio
 	return p;
 }
 
@@ -178,8 +177,3 @@ void initPcbState(state_t* state) {
 	state->hi = 0;
 	state->lo = 0;
 }
-
-
-
-
-
