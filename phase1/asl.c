@@ -8,193 +8,138 @@
 // semd_table: array dei semafori free
 struct semd_t semd_table[MAXPROC];
 // semdFree_h: sentinella semdFree
-struct list_head semdFree_h =  LIST_HEAD_INIT(semdFree_h);
+struct list_head semdFree_h;
 // semdFree: puntatore alla lista dei semafori free
 struct list_head* semdFree = &semdFree_h;
 
 // semd_h: sentinella ASL
-struct list_head semd_h =  LIST_HEAD_INIT(semd_h);
+struct list_head semd_h;
 // ASL lista semafori attivi
 struct list_head* ASL = &semd_h;
 
-/* ASL handling functions */
+/* ASL HANDLING FUNCTIONS */
 
+/* Restituisce il semaforo di chiave key presente in ASL
+ * NULL se non presente */
 semd_t* getSemd(int *key) {
-  // cerco semaforo con chiave key, il controllo da lo stesso risultato sia per semaforo non trovato che per lista vuota
-  list_head* scanasl = ASL->next;
+  struct list_head* scanasl;
   semd_t *scansem;
-  while(scanasl != ASL) {
-    scansem = container_of(scanasl, semd_t, s_next);
-    if(scansem->s_key == key) {
-      return scansem;
-    } else {
-      scanasl = scanasl->next;
-    }
+  list_for_each(scanasl, ASL) {							//scansione lista
+	  scansem = container_of(scanasl, semd_t, s_next);
+	  if(scansem->s_key == key)
+		return scansem;
+	}
+	return NULL;	
   }
-  return NULL;
+
+/* Inizializzazione struttura ASL contenente tutti gli elementi della semdTable */
+void initASL() {
+	INIT_LIST_HEAD(&semdFree_h);		//sentinella della lista dei semafori liberi
+	INIT_LIST_HEAD(&semd_h);			//sentinella della lista dei semafori attivi
+	int i;
+	for(i = 0; i < MAXPROC; i++){
+		list_add_tail(&semd_table[i].s_next, semdFree);
+	}
 }
 
+/* Inserisce  il PCB p nella ASL nella coda dei processi bloccati del semaforo con Id key
+ * Per l'inserimento si usa la funzione insertProcQ di Queue Handling Process */
 int insertBlocked(int *key,pcb_t* p) {
-  // il PCB viene inserito in fondo alla coda dei processi bloccati sul semaforo con chiave key
+  // il PCB viene inserito nella coda dei processi bloccati sul semaforo con chiave key in base alla priorità
   semd_t *ptr = getSemd(key);
-  if(ptr == NULL) {
-    // il semaforo con key non è presente nella ASL
-    if(!list_empty(semdFree)) {
-      // ultimo semaforo fra i liberi
-      list_head *s = semdFree->prev;
-      semd_t *se = container_of(s, semd_t, s_next);
-      // tolgo il semaforo dalla semdFree
-      list_del(s);
-      // aggiungo il semaforo alla ASL
-      list_add_tail(&se->s_next, ASL);
-      se->s_key = key;
-      se->s_procQ.next = &p->p_next;
-      p->p_next.prev = &se->s_procQ;
-      p->p_semkey = key;
-      return 0;
-    } else {
-      // semaforo con key non presente nella ASL e non ci sono semafori liberi da allocare
-      return 1;
-    }
-  } else {
-    // ho trovato il semaforo con quella key nella ASL
-    list_head *scan = &ptr->s_procQ;
-    while(scan->next != NULL) {
-      scan = scan->next;
-    }
-    // sono sull'ultimo PCB in coda al semaforo con key
-    scan->next = &p->p_next;
-    p->p_next.prev = scan;
-    p->p_semkey = key;
+  if(ptr == NULL) {                              	 // il semaforo con key non è presente nella ASL
+    if(list_empty(semdFree))	                 	 // semaforo con key non presente nella ASL e non ci sono semafori liberi da allocare
+		return 1;
+    list_head *s = semdFree->prev;                	// ultimo semaforo fra i liberi
+    semd_t *se = container_of(s, semd_t, s_next);
+    list_del(s);                                 	 // tolgo il semaforo dalla semdFree
+    list_add_tail(&se->s_next, ASL);             	 // aggiungo il semaforo in coda alla ASL
+    se->s_key = key;							 	 // inizializzo key e lista dei processi bloccati del semaforo aggiunto
+    mkEmptyProcQ(&se->s_procQ);
+    p->p_semkey = key;								 // aggiorno la semkey del PCB p
+    insertProcQ(&se->s_procQ, p);               	 // aggiungo il pcb alla coda dei processi bloccati dal semaforo
     return 0;
   }
+  // ho trovato il semaforo con quella key nella ASL
+  p->p_semkey = key;								// aggiorno la semkey del PCB p
+  insertProcQ(&ptr->s_procQ, p);					// aggiungo il pcb alla coda dei processi bloccati dal semaforo
+  return 0;
 }
 
-void initASL() {
-  int i;
-  for(i = 0; i < MAXPROC; i++){
-    list_add_tail(&semd_table[i].s_next, semdFree);
-  }
-}
-
+/* Ritorna il primo PCB della coda dei processi bloccati associata al semaforo di chiave 
+ * key presente nella ASL. Se key non presente restituisce NULL altrimenti restituisce
+ * il PCB rimosso. Se la coda del semaforo si svuota il semaforo è aggiunto alla semdFree */
 pcb_t* removeBlocked(int *key){
   semd_t *ptr = getSemd(key);
   if(ptr == NULL) {
     return NULL;
-  } else {
+    }
     // ho trovato il semaforo con la key (ptr)
-    list_head *scanq = &ptr->s_procQ;
-    pcb_t *toret = container_of(scanq->next, pcb_t, p_next);
-    list_del_notcirc(&toret->p_next);
-    inizializzapcb(toret);
+    pcb_t *p = removeProcQ(&ptr->s_procQ);				// PCB rimosso
     // controllo se il semaforo è rimasto senza processi bloccati in coda, in questo caso lo metto nella lista dei semafori liberi
-    if(scanq->next==NULL) {
-      // il semaforo è rimasto vuoto
+    if(emptyProcQ(&ptr->s_procQ)) {
+      // il semaforo è rimasto vuoto: lo rimuovo dalla ASL e lo inserisco in coda alla lista dei semdFree
       list_del(&ptr->s_next);
       list_add_tail(&ptr->s_next, semdFree);
     }
-    return toret;
-  }
+    return p;											// ritorno il PCB rimosso 
 }
 
+/* Rimuove il PCB p dalla coda del semaforo su cui è bloccato (key = p_semdkey)
+ * Se il PCB non compare nella coda restituisce NULL (ERRORE) altrimenti restituisce p */
 pcb_t* outBlocked(pcb_t *p) {
-  int *key = p->p_semkey;
-  semd_t *ptr = getSemd(key);
-  if(ptr == NULL){
-    // il semaforo su cui è bloccato p non è nella ASL
-    return NULL;
-  } else {
-    // ho trovato il semaforo a cui appartiene il pcb p (semd_t *ptr) che essendo allocato ha almeno un processo
-    // bloccato su di esso, sul quale mi sposto (scan)
-    pcb_t *scan = container_of(ptr->s_procQ.next, pcb_t, p_next);
-    while(scan != p || scan->p_next.next != NULL) {
-      scan = container_of(scan->p_next.next, pcb_t, p_next);
+    int *key = p->p_semkey;
+    semd_t *ptr = getSemd(key);
+    if(ptr == NULL)                  		 	// il semaforo su cui è bloccato p non è nella ASL
+        return NULL;
+    // ho trovato il semaforo a cui appartiene il pcb p (semd_t *ptr)
+    pcb_t *pout = outProcQ(&ptr->s_procQ, p);	//rimuovo p dalla lista del semaforo trovato
+    if(pout == NULL)
+        return NULL;                  			// il pcb p non era nella coda dei processi bloccati sul semaforo a cui appartiene: ERRORE
+    if(emptyProcQ(&ptr->s_procQ)) {
+      // il semaforo è rimasto vuoto: lo rimuovo dalla ASL e lo inserisco in coda alla lista dei semdFree
+      list_del(&ptr->s_next);
+      list_add_tail(&ptr->s_next, semdFree);
     }
-    if(scan != p) {
-      // il pcb p non era nella coda dei processi bloccati sul semaforo a cui appartiene: ERRORE
-      return NULL;
-    } else {
-      // sono sul pcb da ritornare
-      list_del_notcirc(&scan->p_next);
-      // controllo se il semaforo è rimasto senza processi bloccati in coda e nel caso lo dealloco
-      if(ptr->s_procQ.next == NULL) {
-        list_del(&ptr->s_next);
-        list_add_tail(&ptr->s_next, semdFree);
-      }
-      return p;
-    }
-  }
+    return pout;
 }
 
+/* Restituisce senza rimuovere il puntatore al PCB che si trova in testa alla coda dei
+ * processi associata al semaforo di chiave key. Ritorna NULL se il semaforo non è
+ * nella ASL oppure se compare ma ha la lista dei processi vuota */
 pcb_t* headBlocked(int *key) {
   semd_t *ptr = getSemd(key);
-  if(ptr == NULL) {
-    // il semaforo con quella chiave non è in ASL
+  if(ptr == NULL || list_empty(&ptr->s_procQ)) {
+    // il semaforo con quella chiave non è in ASL o la sua lista è vuota
     return NULL;
   } else {
-    // ritorno il primo PCB bloccato in coda al semaforo. Non può essere che non ce ne sia almeno uno o il semaforo non sarebbe nella ASL
+    // ritorno il primo PCB bloccato in coda al semaforo
     return container_of(ptr->s_procQ.next, pcb_t, p_next);
   }
 }
 
+/* Rimuove il PCB p dalla coda del semaforo su cui è bloccato (key = p_semdkey)
+ * Inoltre elimina con una previsita dell'albero radicato in p tutti i processi
+ * dalle eventuali code dei semafori in cui sono bloccati */
 void outChildBlocked(pcb_t *p) {
-  pcb_t *rad = outBlocked(p);
+  pcb_t *rad = outBlocked(p); 
   if(rad != NULL){
-    // p è stato rimosso
-    del_tree(p);
+    // p è stato rimosso e itero ricorsivamente su ogni suo discendente 
+     delTree(p);
   }
 }
 
-//USER defined functions
-/*
-elimina un elemento di una lista bidirezionale non circolare (non deve essere il primo elemento della lista quello da eliminare)
-  p: puntatore alla campo list_head della struttura che voglio eliminare (PCB)
-      non deve essere il primo elemento
+/* USER DEFINED FUNCTIONS */
 
-  return: ritorna
-*/
-list_head* list_del_notcirc(list_head *p) {
-  if(p->next == NULL){
-    p->prev->next = NULL;
-    p->prev = NULL;
-    return p;
-  } else {
-    p->prev->next = p->next;
-    p->next->prev = p->prev;
-    p->next = NULL;
-    p->prev = NULL;
-    return p;
-  }
+/* Funzione chiamata da outChildBlocked*/
+void delTree(pcb_t *p) {
+    if(emptyChild(p))
+        return;                                             //se p non ha figli ho finito altrimenti
+    list_head* scan;                                        //itero sulla lista dei figli di p
+    list_for_each(scan, &p->p_child) {
+        outBlocked(container_of(scan, pcb_t, p_sib));       //rimuovo il pcb di ogni figlio dalla coda del semaforo in cui è bloccato nelle liste di tutti i fratelli
+        delTree(container_of(scan, pcb_t, p_sib));          //itero ricorsivamente sulla lista dei figli di ogni figlio di p
+    }          
 }
 
-/*
-  elimina dalle relative code di processi dei relativi semafori tutti i processi (PCB) che hanno come avo p (input)
-*/
-void recursive(pcb_t *root, pcb_t *realroot) {
-  list_head *scany = &root->p_child;
-  list_head *scanx = &root->p_sib;
-  if(scany->next != NULL){
-    recursive(container_of(scany->next, pcb_t, p_child), realroot);
-  }
-  if(scanx->next != NULL && root != realroot){
-    recursive(container_of(scanx->next, pcb_t, p_sib), realroot);
-  }
-  outBlocked(container_of(scanx, pcb_t, p_sib));
-}
 
-/*
-  funzione ausiliaria alla funzione "recursive": serve per dover dare un solo parametro in input (e non dando lo stesso due volte) rendendo piu intuitiva la chiamata
-  e in questo modo tenendone uno dei due fuori dalla ricorsione
-*/
-void del_tree(pcb_t* p) {
-  recursive(p, p);
-}
-
-//funzione inizializzazione struttura semd_t
-void inizializzasem(struct semd_t* p) {
-  p->s_next.next = NULL;
-  p->s_next.prev = NULL;
-  p->s_key = NULL;
-  p->s_procQ.next = NULL;
-  p->s_procQ.prev = NULL;
-}
