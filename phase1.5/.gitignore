@@ -1,0 +1,14 @@
+# Compiled Object files
+*.o
+
+# Kernel file
+kernel
+
+# Core file
+kernel.core.umps
+
+# Symbol Table
+kernel.stab.umps
+
+# Files automatically created during boot
+term0.umps
