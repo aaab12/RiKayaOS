@@ -24,8 +24,10 @@ sono memorizzati quando vengono sollevate delle eccezioni */
 #define INT_NEWAREA 0x2000008c
 #define INT_OLDAREA 0x20000000
 
-/* INITIAL STATUS REGISTER: Interrupt mascherati, VM off, Kernel mode e PLT on */
-#define INIT_STATUS_REG 0x18000000
+/* EXCEPTION STATUS: Interrupt mascherati, VM off, Kernel mode e PLT on */
+#define EXCEPTION_STATUS 0x18000000
+/* PROCESS STATUS: Interrupt abilitati, VM off, Kernel mode e PLT on */
+#define PROCESS_STATUS 0x1800FF01
 
 #define TRANSMITTED 5
 #define TRANSTATUS 2
@@ -45,6 +47,8 @@ sono memorizzati quando vengono sollevate delle eccezioni */
 #define RAMBASE *((unsigned int *)0x10000000)
 #define RAMSIZE *((unsigned int *)0x10000004)
 #define RAMTOP (RAMBASE + RAMSIZE)
+
+#define FRAMESIZE 4096 /* or 0x1000 bytes, or 4K */
 
 #define SYS3 3
 #define STEPS 6
