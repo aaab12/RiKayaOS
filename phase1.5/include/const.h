@@ -10,11 +10,11 @@
 /* Maxi number of overall (eg, system, daemons, user) concurrent processes */
 #define MAXPROC 20
 
-#define UPROCMAX 3  /* number of usermode processes (not including master proc
-		       and system daemons */
+#define UPROCMAX 3  /* number of usermode processes (not including master proc and system daemons) */
 
 /* Indirizzi delle new e old area in cui gli stati del processore
-sono memorizzati quando vengono sollevate delle eccezioni */
+ * sono memorizzati quando vengono sollevate delle eccezioni
+ */
 #define SYSBK_NEWAREA 0x200003d4
 #define SYSBK_OLDAREA 0x20000348
 #define PGMTRAP_NEWAREA 0x200002bc
@@ -24,10 +24,14 @@ sono memorizzati quando vengono sollevate delle eccezioni */
 #define INT_NEWAREA 0x2000008c
 #define INT_OLDAREA 0x20000000
 
-/* EXCEPTION STATUS: Interrupt mascherati, VM off, Kernel mode e PLT on */
-#define EXCEPTION_STATUS 0x18000000
-/* PROCESS STATUS: Interrupt abilitati, VM off, Kernel mode e PLT on */
-#define PROCESS_STATUS 0x1800FF01
+/* STATUS */
+#define EXCEPTION_STATUS 0x18000000 /* EXCEPTION STATUS: Interrupt mascherati, VM off, Kernel mode e PLT on */
+#define PROCESS_STATUS 0x1800FF01 /* PROCESS STATUS: Interrupt abilitati, VM off, Kernel mode e PLT on */
+
+/* SCHEDULER */
+#define SCHED_TIME_SLICE 3000 /* 3000 microsecondi = 3 millisecondi */
+#define BUS_TIMESCALE 0x10000024 /* numero di tick del clock per microsecondo */
+#define TIME_SLICE SCHED_TIME_SLICE*(*(memaddr *)BUS_TIMESCALE) /* BUS_TIMESCALE*3000 clock_ticks = 3ms */
 
 #define TRANSMITTED 5
 #define TRANSTATUS 2
@@ -48,7 +52,7 @@ sono memorizzati quando vengono sollevate delle eccezioni */
 #define RAMSIZE *((unsigned int *)0x10000004)
 #define RAMTOP (RAMBASE + RAMSIZE)
 
-#define FRAMESIZE 4096 /* or 0x1000 bytes, or 4K */
+#define FRAMESIZE 4096 /* 0x1000 bytes = 4K */
 
 #define SYS3 3
 #define STEPS 6

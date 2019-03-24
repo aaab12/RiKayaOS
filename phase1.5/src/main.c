@@ -1,6 +1,7 @@
 #include "const.h"
 #include "listx.h"
 #include "pcb.h"
+#include "scheduler.h"
 #include <umps/libumps.h>
 
 /* Funzioni di test */
@@ -11,12 +12,13 @@ extern void test3();
 void initNewAreas();
 pcb_t* initPCB(void (*f), int n);
 
-struct list_head ready_queue;
+struct list_head ready_queue; /* Coda dei processi in stato ready */
+pcb_t *current_process; /* Processo correntemente in esecuzione */
 
 int main() {
   initNewAreas(); /* Iniziliazzazione delle new area */
   initPcbs(); /* Inizializzazione lista PCB liberi */
-  INIT_LIST_HEAD(&ready_queue); /* Inizializzazione lista processi liberi */
+  mkEmptyProcQ(&ready_queue); /* Inizializzazione lista processi in stato ready */
 
   pcb_t* pcb1 = initPCB(test1, 1); /* Inizializza primo processo */
   pcb_t* pcb2 = initPCB(test2, 2); /* Inizializza secondo processo */
@@ -32,8 +34,8 @@ void initNewAreas(){
    * la velocità di esecuzione del codice risultante.
    * (pag.72 princOfOperations.pdf)
    */
-	((state_t *)SYSBK_NEWAREA)->reg_sp = RAMTOP;
   ((state_t *)SYSBK_NEWAREA)->reg_t9 = (memaddr)sysbk_handler;
+	((state_t *)SYSBK_NEWAREA)->reg_sp = RAMTOP;
 	((state_t *)SYSBK_NEWAREA)->status = EXCEPTION_STATUS;
 
   ((state_t *)PGMTRAP_NEWAREA)->pc_epc = (memaddr)pgmtrap_handler;
@@ -60,6 +62,7 @@ pcb_t* initPCB(void (*f), int n){
   pcb->p_s.reg_sp = RAMTOP-FRAMESIZE*n;
   pcb->p_s.status = PROCESS_STATUS;
   pcb->priority = n;
-  insertProcQ(&ready_queue, pcb);
+  pcb->original_priority = n;
+  insertProcQ(&ready_queue, pcb); /* Inserimento di pcb nella coda dei processi in stato ready */
   return pcb;
 }
