@@ -1,5 +1,6 @@
 #include "pcb.h"
 
+/* Recursive Terminate Process */
 void r_termine_process(pcb_t* p){
   pcb_t* temp;
   while(temp = removeChild(p)){ /* Estraggo i figli del processo da terminare */

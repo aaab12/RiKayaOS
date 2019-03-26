@@ -28,6 +28,7 @@ int main() {
   insertProcQ(&ready_queue, pcb2); /* Inserimento di pcb2 nella coda dei processi in stato ready */
   insertProcQ(&ready_queue, pcb3); /* Inserimento di pcb3 nella coda dei processi in stato ready */
 
+  scheduler(); /* Passaggio del controllo allo scheduler */
   return 0;
 }
 
