@@ -13,7 +13,7 @@ void initNewAreas();
 pcb_t* initPCB(void (*f), int n);
 
 struct list_head ready_queue; /* Coda dei processi in stato ready */
-pcb_t *current_process; /* Processo correntemente in esecuzione */
+pcb_t *current_process; /* Puntatore al processo attualmente in esecuzione */
 
 int main() {
   initNewAreas(); /* Iniziliazzazione delle new area */
@@ -23,6 +23,10 @@ int main() {
   pcb_t* pcb1 = initPCB(test1, 1); /* Inizializza primo processo */
   pcb_t* pcb2 = initPCB(test2, 2); /* Inizializza secondo processo */
   pcb_t* pcb3 = initPCB(test3, 3); /* Inizializza terzo processo */
+
+  insertProcQ(&ready_queue, pcb1); /* Inserimento di pcb1 nella coda dei processi in stato ready */
+  insertProcQ(&ready_queue, pcb2); /* Inserimento di pcb2 nella coda dei processi in stato ready */
+  insertProcQ(&ready_queue, pcb3); /* Inserimento di pcb3 nella coda dei processi in stato ready */
 
   return 0;
 }
@@ -63,6 +67,5 @@ pcb_t* initPCB(void (*f), int n){
   pcb->p_s.status = PROCESS_STATUS;
   pcb->priority = n;
   pcb->original_priority = n;
-  insertProcQ(&ready_queue, pcb); /* Inserimento di pcb nella coda dei processi in stato ready */
   return pcb;
 }
