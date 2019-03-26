@@ -6,6 +6,7 @@ void r_termine_process(pcb_t* p){
   while(temp = removeChild(p)){ /* Estraggo i figli del processo da terminare */
     r_termine_process(temp); /* Richiamo la funzione sul figlio */
   }
+  process_counter--;
   outProcQ(ready_queue, p); /* Estraggo il processo dalla coda dei processi ready */
   freePcb(current_process); /* Libero il processo */
 }

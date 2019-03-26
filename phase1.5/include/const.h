@@ -33,6 +33,11 @@
 #define BUS_TIMESCALE 0x10000024 /* numero di tick del clock per microsecondo */
 #define TIME_SLICE SCHED_TIME_SLICE*(*(memaddr *)BUS_TIMESCALE) /* BUS_TIMESCALE*3000 clock_ticks = 3ms */
 
+/* SYSCALL */
+/* Sulle slide la syscall 3 viene chiamata in modo diverso rispetto al file di test */
+#define SYS3              3
+#define TERMINATEPROCESS  (SYS3)
+
 #define TRANSMITTED 5
 #define TRANSTATUS 2
 #define ACK 1

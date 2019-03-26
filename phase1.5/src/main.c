@@ -14,6 +14,7 @@ pcb_t* initPCB(void (*f), int n);
 
 struct list_head ready_queue; /* Coda dei processi in stato ready */
 pcb_t *current_process; /* Puntatore al processo attualmente in esecuzione */
+int process_counter = 0;	/* Contatore dei processi */
 
 int main() {
   initNewAreas(); /* Iniziliazzazione delle new area */
@@ -68,5 +69,6 @@ pcb_t* initPCB(void (*f), int n){
   pcb->p_s.status = PROCESS_STATUS;
   pcb->priority = n;
   pcb->original_priority = n;
+  process_counter++;
   return pcb;
 }
