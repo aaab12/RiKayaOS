@@ -1,5 +1,5 @@
-/* Interrupts handler */
-void int_handler(){
+/* SYSCALL/Breakpoint handler */
+void sysbk_handler(){
 
 }
 
@@ -13,7 +13,7 @@ void tlb_handler(){
 
 }
 
-/* SYSCALL/Breakpoint handler */
-void sysbk_handler(){
+/* Interrupts handler */
+void int_handler(){
 
 }

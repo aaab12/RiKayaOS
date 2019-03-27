@@ -5,6 +5,8 @@
 #include "listx.h"
 
 typedef unsigned int memaddr;
+typedef unsigned int u32;
+typedef u32 cpu_time;
 
 // Process Control Block (PCB) data structure
 typedef struct pcb_t {
@@ -25,6 +27,10 @@ typedef struct pcb_t {
 
 	/* key of the semaphore on which the process is eventually blocked */
 	int			*p_semkey;
+
+	/* tempo di esecuzione del processo */
+	cpu_time			time;
+
 } pcb_t;
 
 

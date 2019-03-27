@@ -59,7 +59,6 @@
 
 #define FRAMESIZE 4096 /* 0x1000 bytes = 4K */
 
-#define SYS3 3
 #define STEPS 6
 #define GANTT_SIZE 20
 
