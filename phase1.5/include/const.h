@@ -63,6 +63,27 @@
 #define STEPS 6
 #define GANTT_SIZE 20
 
+/* Utility definitions for the status register:
+ * OR the register with these to set a specific bit,
+ * AND with the opposite to unset a specific bit.
+ * For example, to set STATUS_VMc, do status = status | STATUS_VMc;
+ * to unset it do status = status & ~STATUS_VMc
+ */
+#define STATUS_IEc 0x00000001
+#define STATUS_KUc 0x00000002
+#define STATUS_IEp 0x00000004
+#define STATUS_KUp 0x00000008
+#define STATUS_IEo 0x00000010
+#define STATUS_KUo 0x00000020
+#define STATUS_VMc 0x01000000
+#define STATUS_VMp 0x02000000
+#define STATUS_VMo 0x04000000
+
+/* Utility definitions for the Cause CP0 register */
+#define CAUSE_EXCCODE_GET(cause) (((cause) & 0x0000007c) >> 2)
+#define CAUSE_EXCCODE_SET(cause, exc_code) (((cause) & 0xffffff83) | ((exc_code) << 2))
+#define CAUSE_CE_GET(cause) (cause & 0x30000000)
+
 #define	HIDDEN static
 #define	TRUE 	1
 #define	FALSE	0
