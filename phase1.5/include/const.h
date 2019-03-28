@@ -58,6 +58,7 @@
 #define RAMTOP (RAMBASE + RAMSIZE)
 
 #define FRAMESIZE 4096 /* 0x1000 bytes = 4K */
+#define WORDSIZE 4
 
 #define STEPS 6
 #define GANTT_SIZE 20
