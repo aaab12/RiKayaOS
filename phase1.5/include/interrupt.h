@@ -7,7 +7,7 @@
 #include "pcb.h"
 #include "interrupt.h"
 
-HIDDEN state_t* int_old_area;
+state_t* int_old_area;
 int int_cause;
 
 void int_timer();

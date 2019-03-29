@@ -11,8 +11,8 @@ int main() {
   initPcbs(); /* Inizializzazione lista PCB liberi */
   mkEmptyProcQ(&ready_queue); /* Inizializzazione lista processi in stato ready */
 
-  int process_counter = 0;
-  int current_process_tod = 0;
+  process_counter = 0;
+  current_process_tod = 0;
   current_process = NULL;
 
   pcb_t* pcb1 = initPCB(test1, 1); /* Inizializza primo processo */

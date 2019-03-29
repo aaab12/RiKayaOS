@@ -15,9 +15,8 @@ void save_state(state_t* source, state_t* destination) {
 
 
 void aging(struct list_head* head){
-  pcb_t* p = headProcQ(head); /* Puntatore al primo elemento della lista */
-  while (p != NULL) {
-    p->priority += 1; /* Meccanismo di aging */
-    p = p->p_next.next;
+	struct list_head* scan;
+	list_for_each(scan, head){
+		container_of(scan, pcb_t, p_next)->priority++;			/* Meccanismo di aging */
   }
 }
