@@ -19,13 +19,20 @@ endif
 UMPS2_DATA_DIR = $(UMPS2_DIR_PREFIX)/share/umps2
 UMPS2_INCLUDE_DIR = $(UMPS2_DIR_PREFIX)/include/umps2
 
+# Includes directory
 IDIR = ../include
-_DEPS = *.h
-DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
-
+# Object files directory
 ODIR = obj
+# Object files
 _OBJ = crtso.o handler.o interrupts.o libumps.o main.o p1.5test_rikaya_v0.o pcb.o scheduler.o syscall.o utils.o
+# Object files path
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
+# Kernel file
+_KERNEL = kernel
+# Kernel folder
+KDIR = kernel
+# Kernel path
+KERNEL = $(patsubst %,$(KDIR)/%,$(_KERNEL))
 
 # Compiler options
 CFLAGS_LANG = -ffreestanding -ansi
@@ -42,21 +49,23 @@ VPATH = $(UMPS2_DATA_DIR)
 
 all : kernel.core.umps
 
-kernel.core.umps : kernel
+kernel.core.umps : $(KERNEL)
 	umps2-elf2umps -k $<
 
-kernel : $(OBJ)
-	$(LD) -o $@ $^ $(LDFLAGS)
+$(KERNEL) : $(OBJ)
+	mkdir $(KDIR)
+	$(LD) $(LDFLAGS) -o $@ $^
 
 clean :
-	-rm -f $(ODIR)/*.o kernel kernel.*.umps
+	-rm -r $(ODIR) $(KDIR)
 
+# Pattern rule for object files
 $(ODIR)/%.o: %.c
-	$(CC) -c -o $@ $< $(CFLAGS)
-
-# Pattern rule for assembly modules
-$(ODIR)/crtso.o : crtso.S
 	$(CC) $(CFLAGS) -c -o $@ $<
-
+# Pattern rule for crtso module
+$(ODIR)/crtso.o : crtso.S
+	mkdir $(ODIR)
+	$(CC) $(CFLAGS) -c -o $@ $<
+# Pattern rule for libumps module
 $(ODIR)/libumps.o : libumps.S
 	$(CC) $(CFLAGS) -c -o $@ $<
