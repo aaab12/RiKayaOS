@@ -19,14 +19,21 @@ endif
 UMPS2_DATA_DIR = $(UMPS2_DIR_PREFIX)/share/umps2
 UMPS2_INCLUDE_DIR = $(UMPS2_DIR_PREFIX)/include/umps2
 
+IDIR = ../include
+_DEPS = *.h
+DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
+
+ODIR = obj
+_OBJ = crtso.o handler.o interrupts.o libumps.o main.o p1.5test_rikaya_v0.o pcb.o scheduler.o syscall.o utils.o
+OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
+
 # Compiler options
 CFLAGS_LANG = -ffreestanding -ansi
 CFLAGS_MIPS = -mips1 -mabi=32 -mno-gpopt -G 0 -mno-abicalls -fno-pic -mfp32 -std=gnu11
-CFLAGS = $(CFLAGS_LANG) $(CFLAGS_MIPS) -I$(UMPS2_INCLUDE_DIR) -Wall -O0
+CFLAGS = $(CFLAGS_LANG) $(CFLAGS_MIPS) -I$(UMPS2_INCLUDE_DIR) -I$(IDIR) -Wall -O0
 
 # Linker options
 LDFLAGS = -G 0 -nostdlib -T $(UMPS2_DATA_DIR)/umpscore.ldscript
-
 
 # Add the location of crt*.S to the search path
 VPATH = $(UMPS2_DATA_DIR)
@@ -38,12 +45,18 @@ all : kernel.core.umps
 kernel.core.umps : kernel
 	umps2-elf2umps -k $<
 
-kernel : ./src/*.o crtso.o libumps.o
+kernel : $(OBJ)
 	$(LD) -o $@ $^ $(LDFLAGS)
 
 clean :
-	-rm -f *.o kernel kernel.*.umps
+	-rm -f $(ODIR)/*.o kernel kernel.*.umps
+
+$(ODIR)/%.o: %.c
+	$(CC) -c -o $@ $< $(CFLAGS)
 
 # Pattern rule for assembly modules
-%.o : %.S
+$(ODIR)/crtso.o : crtso.S
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(ODIR)/libumps.o : libumps.S
 	$(CC) $(CFLAGS) -c -o $@ $<
