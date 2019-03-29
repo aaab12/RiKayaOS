@@ -1,14 +1,16 @@
-#include "syscall.h"
 #include "main.h"
+#include "pcb.h"
+#include "scheduler.h"
+#include "syscall.h"
 
 /* Recursive Terminate Process */
 void r_termine_process(pcb_t* p){
   pcb_t* temp;
-  while(temp = removeChild(p)){ /* Estraggo i figli del processo da terminare */
+  while((temp = removeChild(p))){ /* Estraggo i figli del processo da terminare */
     r_termine_process(temp); /* Richiamo la funzione sul figlio */
   }
   process_counter--;
-  outProcQ(ready_queue, p); /* Estraggo il processo dalla coda dei processi ready */
+  outProcQ(&ready_queue, p); /* Estraggo il processo dalla coda dei processi ready */
   freePcb(current_process); /* Libero il processo */
 }
 

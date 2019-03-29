@@ -1,16 +1,19 @@
 #include "const.h"
 #include <umps/libumps.h>
 #include "utils.h"
+#include "main.h"
+
+extern void log_process_order(int process);
 
 void scheduler(){
   if(current_process != NULL) {
 	  current_process->cpu_time += (TOD_LO - current_process_tod);
-	  current_process_tod = TOD_LO; 	
+	  current_process_tod = TOD_LO;
 	  setTIMER(SCHED_TIME_SLICE - current_process->cpu_slice);
       LDST(&current_process->p_s);
   }
-  else if(current_process = NULL) { /* Setto current_process a NULL per evitare che punti al processo precedentemente caricato quando avvengono interrupt con la ready_queue vuota */
-	if (process_counter == 0) 
+  else if((current_process = NULL)) { /* Setto current_process a NULL per evitare che punti al processo precedentemente caricato quando avvengono interrupt con la ready_queue vuota */
+	if (process_counter == 0)
 		HALT();
 	if(!(emptyProcQ(&ready_queue))){ /* Se la coda dei processi ready non è vuota, manda in esecuzione un processo */
 		current_process = removeProcQ(&ready_queue); /* Rimozione del primo elemento di ready_queue */

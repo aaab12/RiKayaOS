@@ -4,6 +4,7 @@
 #include "syscall.h"
 #include "interrupt.h"
 #include "main.h"
+#include "utils.h"
 
 /* SYSCALL/Breakpoint handler */
 void sysbk_handler(){
@@ -23,7 +24,7 @@ void sysbk_handler(){
 	u32* arg3	= &(caller_process->reg_a3);
 
 	u32* status = &(caller_process->status); /* Stato del processo al momento della chiamata (kernel/user mode) */
-	u32* cause = &(caller_process->cause); /* Causa della SYSCALL (tipo di eccezione sollevato) */
+	int  cause =   (caller_process->cause); /* Causa della SYSCALL (tipo di eccezione sollevato) */
 
 	if (CAUSE_EXCCODE_GET(cause) == 8){ /* SYSCALL */
 		if ((*status & STATUS_KUp) == 0 ){ /* kernel mode */
@@ -80,13 +81,13 @@ void tlb_handler(){
 /* Interrupts handler */
 void int_handler(){
 	int_old_area = (state_t*) INT_OLDAREA;
-	cause = getCAUSE();
+	int_cause = getCAUSE();
 	/* Controllo se c'è un pcb attivo sul processore
 	 * se true salvo lo stato della CPU nel campo state del pcb */
 	if(current_process != NULL) {
 		current_process->cpu_slice += (TOD_LO - current_process_tod);	//aggionamento tempo pcb
 		current_process->cpu_time += (TOD_LO - current_process_tod);
-		save_state(int_old_area, current_process->t_state);   
+		save_state(int_old_area, &current_process->p_s);
 	}
 	switch(int_cause){
 		case INT_LOCAL_TIMER:

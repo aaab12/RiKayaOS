@@ -5,6 +5,7 @@
 #include "listx.h"
 
 typedef unsigned int memaddr;
+typedef unsigned int u32;
 
 // Process Control Block (PCB) data structure
 typedef struct pcb_t {
@@ -18,7 +19,7 @@ typedef struct pcb_t {
 
 	/* processor state, etc */
 	state_t       		p_s;
-	
+
 	/* porocessor timer */
 	int cpu_time;
 	int cpu_slice;

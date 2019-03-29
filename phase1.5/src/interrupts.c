@@ -3,6 +3,7 @@
 #include "listx.h"
 #include "pcb.h"
 #include "interrupt.h"
+#include "main.h"
 
 void int_timer() {
 		if(current_process != NULL && current_process->cpu_slice >=SCHED_TIME_SLICE) {

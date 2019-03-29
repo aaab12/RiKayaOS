@@ -48,9 +48,18 @@
 #define INT_TERMINAL 7
 
 /* SYSCALL */
-/* Sulle slide la syscall 3 viene chiamata in modo diverso rispetto al file di test */
+#define SYS1 		          1
+#define	SYS2 		          2
 #define SYS3              3
-#define TERMINATEPROCESS  (SYS3)
+#define TERMINATEPROCESS  (SYS3) /* Sulle slide la syscall 3 viene chiamata in modo diverso rispetto al file di test */
+#define SYS4		          4
+#define SYS5		          5
+#define SYS6		          6
+#define SYS7		          7
+#define SYS8			        8
+#define SYS9		          9
+#define SYS10		          10
+#define SYS11		          11
 
 #define TRANSMITTED 5
 #define TRANSTATUS 2

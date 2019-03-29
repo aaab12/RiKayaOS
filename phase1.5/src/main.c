@@ -3,21 +3,22 @@
 #include "pcb.h"
 #include "scheduler.h"
 #include <umps/libumps.h>
-
+#include "main.h"
+#include "handler.h"
 
 int main() {
   initNewAreas(); /* Iniziliazzazione delle new area */
   initPcbs(); /* Inizializzazione lista PCB liberi */
   mkEmptyProcQ(&ready_queue); /* Inizializzazione lista processi in stato ready */
-  
+
   int process_counter = 0;
   int current_process_tod = 0;
   current_process = NULL;
-  		
+
   pcb_t* pcb1 = initPCB(test1, 1); /* Inizializza primo processo */
   pcb_t* pcb2 = initPCB(test2, 2); /* Inizializza secondo processo */
   pcb_t* pcb3 = initPCB(test3, 3); /* Inizializza terzo processo */
-	
+
   insertProcQ(&ready_queue, pcb1); /* Inserimento di pcb1 nella coda dei processi in stato ready */
   insertProcQ(&ready_queue, pcb2); /* Inserimento di pcb2 nella coda dei processi in stato ready */
   insertProcQ(&ready_queue, pcb3); /* Inserimento di pcb3 nella coda dei processi in stato ready */
@@ -56,8 +57,8 @@ void initNewAreas(){
 pcb_t* initPCB(void (*f), int n){
   pcb_t* pcb = allocPcb();
   STST(&(pcb->p_s)); /* STST memorizza lo stato corrente del processore nella locazione di memoria fisica fornita  */
-  pcb->p_s.pc_epc = (memaddr)(*f);
-  pcb->p_s.reg_t9 = (memaddr)(*f);
+  pcb->p_s.pc_epc = (memaddr)(f);
+  pcb->p_s.reg_t9 = (memaddr)(f);
   pcb->p_s.reg_sp = RAMTOP-FRAMESIZE*n;
   pcb->p_s.status = PROCESS_STATUS;
   pcb->priority = n;
