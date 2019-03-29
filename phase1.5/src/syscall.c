@@ -1,4 +1,5 @@
-#include "pcb.h"
+#include "syscall.h"
+#include "main.h"
 
 /* Recursive Terminate Process */
 void r_termine_process(pcb_t* p){

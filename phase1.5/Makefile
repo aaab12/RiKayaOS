@@ -27,6 +27,7 @@ CFLAGS = $(CFLAGS_LANG) $(CFLAGS_MIPS) -I$(UMPS2_INCLUDE_DIR) -Wall -O0
 # Linker options
 LDFLAGS = -G 0 -nostdlib -T $(UMPS2_DATA_DIR)/umpscore.ldscript
 
+
 # Add the location of crt*.S to the search path
 VPATH = $(UMPS2_DATA_DIR)
 

@@ -1,6 +1,8 @@
 #ifndef __SYSCALL
 #define __SYSCALL
 
+#include "pcb.h"
+
 /* Recursive Terminate Process */
 void r_termine_process(pcb_t* p);
 

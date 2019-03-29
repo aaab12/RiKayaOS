@@ -33,6 +33,20 @@
 #define BUS_TIMESCALE 0x10000024 /* numero di tick del clock per microsecondo */
 #define TIME_SLICE SCHED_TIME_SLICE*(*(memaddr *)BUS_TIMESCALE) /* BUS_TIMESCALE*3000 clock_ticks = 3ms */
 
+/* INTERRUPTS */
+
+/* Macro che restituisce true se la interrupt è del tipo specificato */
+#define CAUSE_INT_GET(cause, int_number) ((cause) & (1 << ((int_number) + 8)))
+
+#define INT_PROCESSOR 0
+#define INT_LOCAL_TIMER	1
+#define INT_INTERVAL_TIMER 2
+#define INT_DISK 3
+#define INT_TAPE 4
+#define INT_NETWORK 5
+#define INT_PRINTER 6
+#define INT_TERMINAL 7
+
 /* SYSCALL */
 /* Sulle slide la syscall 3 viene chiamata in modo diverso rispetto al file di test */
 #define SYS3              3

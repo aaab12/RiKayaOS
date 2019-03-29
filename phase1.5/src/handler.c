@@ -1,6 +1,9 @@
 #include "const.h"
 #include "types_rikaya.h"
+#include "pcb.h"
 #include "syscall.h"
+#include "interrupt.h"
+#include "main.h"
 
 /* SYSCALL/Breakpoint handler */
 void sysbk_handler(){
@@ -76,5 +79,26 @@ void tlb_handler(){
 
 /* Interrupts handler */
 void int_handler(){
-
+	int_old_area = (state_t*) INT_OLDAREA;
+	cause = getCAUSE();
+	/* Controllo se c'è un pcb attivo sul processore
+	 * se true salvo lo stato della CPU nel campo state del pcb */
+	if(current_process != NULL) {
+		current_process->cpu_slice += (TOD_LO - current_process_tod);	//aggionamento tempo pcb
+		current_process->cpu_time += (TOD_LO - current_process_tod);
+		save_state(int_old_area, current_process->t_state);   
+	}
+	switch(int_cause){
+		case INT_LOCAL_TIMER:
+			int_timer;				//unica interrupt gestita in questa fase
+			break;
+		case INT_DISK:
+			break;
+		case INT_TAPE:
+			break;
+		case INT_PRINTER:
+				break;
+		case INT_TERMINAL:
+				break;
+		}
 }

@@ -4,27 +4,20 @@
 #include "scheduler.h"
 #include <umps/libumps.h>
 
-/* Funzioni di test */
-extern void test1();
-extern void test2();
-extern void test3();
-
-void initNewAreas();
-pcb_t* initPCB(void (*f), int n);
-
-struct list_head ready_queue; /* Coda dei processi in stato ready */
-pcb_t *current_process; /* Puntatore al processo attualmente in esecuzione */
-int process_counter = 0;	/* Contatore dei processi */
 
 int main() {
   initNewAreas(); /* Iniziliazzazione delle new area */
   initPcbs(); /* Inizializzazione lista PCB liberi */
   mkEmptyProcQ(&ready_queue); /* Inizializzazione lista processi in stato ready */
-
+  
+  int process_counter = 0;
+  int current_process_tod = 0;
+  current_process = NULL;
+  		
   pcb_t* pcb1 = initPCB(test1, 1); /* Inizializza primo processo */
   pcb_t* pcb2 = initPCB(test2, 2); /* Inizializza secondo processo */
   pcb_t* pcb3 = initPCB(test3, 3); /* Inizializza terzo processo */
-
+	
   insertProcQ(&ready_queue, pcb1); /* Inserimento di pcb1 nella coda dei processi in stato ready */
   insertProcQ(&ready_queue, pcb2); /* Inserimento di pcb2 nella coda dei processi in stato ready */
   insertProcQ(&ready_queue, pcb3); /* Inserimento di pcb3 nella coda dei processi in stato ready */

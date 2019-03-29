@@ -1,7 +1,7 @@
 #ifndef __SCHEDULER
 #define __SCHEDULER
 
-void aging(struct list_head* head);
+extern void log_process_order(int process);
 
 void scheduler();
 
