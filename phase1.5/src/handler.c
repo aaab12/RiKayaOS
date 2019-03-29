@@ -90,7 +90,7 @@ void int_handler(){
 	}
 	switch(int_cause){
 		case INT_LOCAL_TIMER:
-			int_timer;				//unica interrupt gestita in questa fase
+			int_timer();				//unica interrupt gestita in questa fase
 			break;
 		case INT_DISK:
 			break;
