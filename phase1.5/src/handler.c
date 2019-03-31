@@ -74,18 +74,15 @@ void int_handler(){
 	state_t* caller_process = (state_t *)INT_OLDAREA;
 	/* Linea da cui proviene l'interrupt */
 	int line = 0;
-	for (line; line < INT_LINES; line++){
-		if (CAUSE_IP_GET(getCAUSE(), line)){
-			break; /* Linea trovata */
-		}
+	while ((line < INT_LINES) && (!CAUSE_INT_GET(getCAUSE(), line))) {
+		line++;
 	}
-
 	/* Controllo se c'è un pcb attivo sul processore
 	 * se true salvo lo stato della CPU nel campo state del pcb */
 	if(current_process != NULL) {
 		current_process->cpu_slice += (TOD_LO - current_process_tod);	//aggionamento tempo pcb
 		current_process->cpu_time += (TOD_LO - current_process_tod);
-		save_state(int_old_area, &current_process->p_s);
+		save_state(caller_process, &current_process->p_s);
 	}
 
 	switch(line){
