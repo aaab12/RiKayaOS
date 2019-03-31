@@ -9,5 +9,4 @@ void save_state(state_t* source, state_t* destination);
 
 void aging(struct list_head* head);
 
-
 #endif

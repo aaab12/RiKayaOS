@@ -29,31 +29,21 @@ void sysbk_handler(){
 	if (CAUSE_EXCCODE_GET(cause) == 8){ /* SYSCALL */
 		if ((*status & STATUS_KUp) == 0 ){ /* kernel mode */
 			switch (*arg0){
-				case SYS1:
-					break;
-				case SYS2:
-					break;
 				case TERMINATEPROCESS:
 					terminate_process();
 					break;
+				case SYS1:
+				case SYS2:
 				case SYS4:
-					break;
 				case SYS5:
-					break;
 				case SYS6:
-					break;
 				case SYS7:
-					break;
 				case SYS8:
-					break;
 				case SYS9:
-					break;
 				case SYS10:
-					break;
 				case SYS11:
-					break;
 				default:
-					PANIC(); /* SYSCALL non definita */
+					PANIC(); /* SYSCALL non definita o non implementata */
 			}
 		} else { /* user mode */
 			/*
@@ -80,8 +70,16 @@ void tlb_handler(){
 
 /* Interrupts handler */
 void int_handler(){
-	int_old_area = (state_t*) INT_OLDAREA;
-	int_cause = getCAUSE();
+	/* Processo interrotto (non necessariamente quello che ha sollevato l'interrupt) */
+	state_t* caller_process = (state_t *)INT_OLDAREA;
+	/* Linea da cui proviene l'interrupt */
+	int line = 0;
+	for (line; line < INT_LINES; line++){
+		if (CAUSE_IP_GET(getCAUSE(), line)){
+			break; /* Linea trovata */
+		}
+	}
+
 	/* Controllo se c'è un pcb attivo sul processore
 	 * se true salvo lo stato della CPU nel campo state del pcb */
 	if(current_process != NULL) {
@@ -89,17 +87,19 @@ void int_handler(){
 		current_process->cpu_time += (TOD_LO - current_process_tod);
 		save_state(int_old_area, &current_process->p_s);
 	}
-	switch(int_cause){
-		case INT_LOCAL_TIMER:
-			int_timer();				//unica interrupt gestita in questa fase
+
+	switch(line){
+		case INT_PLT:
+			plt_handler();
 			break;
+		case INT_PROCESSOR:
+		case INT_TIMER:
 		case INT_DISK:
-			break;
 		case INT_TAPE:
-			break;
+		case INT_NETWORK:
 		case INT_PRINTER:
-				break;
 		case INT_TERMINAL:
-				break;
-		}
+		default:
+			PANIC(); /* Interrupt non implementato o linea errata */
+	}
 }

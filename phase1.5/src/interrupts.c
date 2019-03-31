@@ -5,7 +5,7 @@
 #include "interrupt.h"
 #include "main.h"
 
-void int_timer() {
+void plt_handler() {
 		if(current_process != NULL && current_process->cpu_slice >=SCHED_TIME_SLICE) {
 			insertProcQ(&ready_queue, current_process);
 			current_process = NULL;

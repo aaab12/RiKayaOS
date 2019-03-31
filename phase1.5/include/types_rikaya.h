@@ -9,18 +9,17 @@ typedef unsigned int u32;
 
 // Process Control Block (PCB) data structure
 typedef struct pcb_t {
-	/*process queue fields */
+	/* process queue fields */
 	struct list_head	p_next;
 
-	/*process tree fields */
+	/* process tree fields */
 	struct pcb_t		*p_parent;
-	struct list_head	p_child,
-				p_sib;
+	struct list_head	p_child, p_sib;
 
 	/* processor state, etc */
 	state_t       		p_s;
 
-	/* porocessor timer */
+	/* processor timer */
 	int cpu_time;
 	int cpu_slice;
 

@@ -33,14 +33,16 @@
 #define BUS_TIMESCALE 0x10000024 /* numero di tick del clock per microsecondo */
 #define TIME_SLICE SCHED_TIME_SLICE*(*(memaddr *)BUS_TIMESCALE) /* BUS_TIMESCALE*3000 clock_ticks = 3ms */
 
-/* INTERRUPTS */
-
 /* Macro che restituisce true se la interrupt è del tipo specificato */
 #define CAUSE_INT_GET(cause, int_number) ((cause) & (1 << ((int_number) + 8)))
 
+/* Numero delle linee di interrupt totali */
+#define INT_LINES 8
+
+/* INTERRUPTS */
 #define INT_PROCESSOR 0
-#define INT_LOCAL_TIMER	1
-#define INT_INTERVAL_TIMER 2
+#define INT_PLT	1
+#define INT_TIMER 2
 #define INT_DISK 3
 #define INT_TAPE 4
 #define INT_NETWORK 5
@@ -75,7 +77,6 @@
 #define BUSY 3
 
 #define TOD_LO *((unsigned int *)0x1000001C)
-#define TIME_SCALE *((unsigned int *)0x10000024)
 #define RAMBASE *((unsigned int *)0x10000000)
 #define RAMSIZE *((unsigned int *)0x10000004)
 #define RAMTOP (RAMBASE + RAMSIZE)
