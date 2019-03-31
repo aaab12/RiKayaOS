@@ -6,8 +6,6 @@ CC = $(XT_PRG_PREFIX)gcc
 # linker
 LD = $(XT_PRG_PREFIX)ld
 
-# uMPS2-related paths
-
 # Simplistic search for the umps2 install. prefix. If you have umps2
 # installed on some weird location, set UMPS2_DIR_PREFIX by hand.
 ifneq ($(wildcard /usr/bin/umps2),)
@@ -16,6 +14,7 @@ else
     UMPS2_DIR_PREFIX = /usr/local
 endif
 
+# uMPS2-related paths
 UMPS2_DATA_DIR = $(UMPS2_DIR_PREFIX)/share/umps2
 UMPS2_INCLUDE_DIR = $(UMPS2_DIR_PREFIX)/include/umps2
 
@@ -48,24 +47,31 @@ VPATH = $(UMPS2_DATA_DIR)
 .PHONY : all clean
 
 all : kernel.core.umps
+	@echo "==> done."
 
 kernel.core.umps : $(KERNEL)
-	umps2-elf2umps -k $<
+	@umps2-elf2umps -k $<
+	@echo "==> converting..."
 
 $(KERNEL) : $(OBJ)
-	mkdir $(KDIR)
-	$(LD) $(LDFLAGS) -o $@ $^
+	@mkdir $(KDIR)
+	@$(LD) $(LDFLAGS) -o $@ $^
+	@echo "==> linking..."
 
 clean :
-	-rm -r $(ODIR) $(KDIR)
+	@rm -rf $(ODIR) $(KDIR)
+	@echo "==> cleaning..."
 
 # Pattern rule for object files
 $(ODIR)/%.o: %.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+	@$(CC) $(CFLAGS) -c -o $@ $<
+	@echo "==> compiling" $<
 # Pattern rule for crtso module
 $(ODIR)/crtso.o : crtso.S
-	mkdir $(ODIR)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	@mkdir $(ODIR)
+	@$(CC) $(CFLAGS) -c -o $@ $<
+	@echo "==> compiling" $@
 # Pattern rule for libumps module
 $(ODIR)/libumps.o : libumps.S
-	$(CC) $(CFLAGS) -c -o $@ $<
+	@$(CC) $(CFLAGS) -c -o $@ $<
+	@echo "==> compiling" $@
