@@ -54,7 +54,7 @@ kernel.core.umps : $(KERNEL)
 	@echo "==> converting..."
 
 $(KERNEL) : $(OBJ)
-	@mkdir $(KDIR)
+	@mkdir -p $(KDIR)
 	@$(LD) $(LDFLAGS) -o $@ $^
 	@echo "==> linking..."
 
@@ -68,7 +68,7 @@ $(ODIR)/%.o: %.c
 	@echo "==> compiling" $<
 # Pattern rule for crtso module
 $(ODIR)/crtso.o : crtso.S
-	@mkdir $(ODIR)
+	@mkdir -p $(ODIR)
 	@$(CC) $(CFLAGS) -c -o $@ $<
 	@echo "==> compiling" $@
 # Pattern rule for libumps module
