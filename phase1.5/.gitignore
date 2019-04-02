@@ -1,7 +1,10 @@
 # Compiled Object files
 *.o
 
-# Kernel file
+# Compiled Object folder
+obj
+
+# Kernel file / folder
 kernel
 
 # Core file
@@ -11,4 +14,4 @@ kernel.core.umps
 kernel.stab.umps
 
 # Files automatically created during boot
-term0.umps
+*.umps
