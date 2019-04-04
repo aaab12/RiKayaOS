@@ -8,6 +8,7 @@
 
 /* SYSCALL/Breakpoint handler */
 void sysbk_handler(){
+	termprint("SYSBK HANDLER\n", 1);
   /* Processo chiamante */
 	state_t* caller_process = (state_t *)SYSBK_OLDAREA;
 
@@ -60,43 +61,46 @@ void sysbk_handler(){
 
 /* Program Traps handler */
 void pgmtrap_handler(){
-
+	//termprint("pgmtrap_handler\n", 1);
 }
 
 /* TLB Management handler */
 void tlb_handler(){
-
+	termprint("tlb_handler\n", 1);
 }
 
 /* Interrupts handler */
 void int_handler(){
+	//termprint("\n==> nell'interrupt handler\n", 1);
 	/* Processo interrotto (non necessariamente quello che ha sollevato l'interrupt) */
 	state_t* caller_process = (state_t *)INT_OLDAREA;
 	/* Linea da cui proviene l'interrupt */
 	int line = 0;
-	while ((line < INT_LINES) && (!CAUSE_INT_GET(getCAUSE(), line))) {
+	while ((line<10) && !(CAUSE_INT_GET(getCAUSE(), line))) {
 		line++;
 	}
-	/* Controllo se c'è un pcb attivo sul processore
-	 * se true salvo lo stato della CPU nel campo state del pcb */
-	if(current_process != NULL) {
-		current_process->cpu_slice += (TOD_LO - current_process_tod);	//aggionamento tempo pcb
-		current_process->cpu_time += (TOD_LO - current_process_tod);
-		save_state(caller_process, &current_process->p_s);
-	}
-
 	switch(line){
 		case INT_PLT:
+		//termprint("==> plt interrupt\n", 1);
 			plt_handler();
 			break;
 		case INT_PROCESSOR:
+			termprint("processor\n", 1);
 		case INT_TIMER:
+			termprint("timer\n", 1);
 		case INT_DISK:
+			termprint("disk\n", 1);
 		case INT_TAPE:
+			termprint("tape\n", 1);
 		case INT_NETWORK:
+			termprint("network\n", 1);
 		case INT_PRINTER:
+			termprint("printer\n", 1);
 		case INT_TERMINAL:
+			termprint("==> terminal interrupt\n", 1);
+			break;
 		default:
+			//termprint("PANIC\n", 1);
 			PANIC(); /* Interrupt non implementato o linea errata */
 	}
 }

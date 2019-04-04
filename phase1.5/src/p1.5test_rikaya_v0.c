@@ -19,7 +19,6 @@
 #define BUSY 3
 
 #define TOD_LO *((unsigned int *)0x1000001C)
-#define TIME_SCALE *((unsigned int *)0x10000024)
 #define RAMBASE *((unsigned int *)0x10000000)
 #define RAMSIZE *((unsigned int *)0x10000004)
 #define RAMTOP (RAMBASE + RAMSIZE)
@@ -59,7 +58,7 @@ devreg termstat(memaddr *stataddr)
     return ((*stataddr) & STATUSMASK);
 }
 
-/* This function prints a string on specified terminal and returns TRUE if 
+/* This function prints a string on specified terminal and returns TRUE if
  * print was successful, FALSE if not   */
 unsigned int termprint(char *str, unsigned int term)
 {
@@ -180,7 +179,7 @@ void test1()
             ;
 
         termprint(toprint[i * 3], 0);
-        delay_ms((getRANDOM() >> 8) * 100);
+        //delay_ms((getRANDOM() >> 8) * 100);
         test1_baton[i] = 1;
     }
     while (test3_baton[STEPS] == 0)
@@ -200,7 +199,7 @@ void test2()
             ;
 
         termprint(toprint[i * 3 + 1], 0);
-        delay_ms((getRANDOM() >> 8) * 100);
+        //delay_ms((getRANDOM() >> 8) * 100);
         test2_baton[i] = 1;
     }
     while (test1_baton[i] == 0)
@@ -218,10 +217,10 @@ void test3()
     for (i = 0; i < STEPS; i++)
     {
         while (test2_baton[i] == 0)
-            ;
+          ;
 
         termprint(toprint[i * 3 + 2], 0);
-        delay_ms((getRANDOM() >> 8) * 100);
+        //delay_ms((getRANDOM() >> 8) * 100);
         test3_baton[i + 1] = 1;
     }
     while (test2_baton[STEPS] == 0)

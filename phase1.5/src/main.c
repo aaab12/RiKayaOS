@@ -7,6 +7,7 @@
 #include "handler.h"
 
 int main() {
+  //termprint("==> nel main\n", 1);
   initNewAreas(); /* Iniziliazzazione delle new area */
   initPcbs(); /* Inizializzazione lista PCB liberi */
   mkEmptyProcQ(&ready_queue); /* Inizializzazione lista processi in stato ready */
@@ -23,6 +24,7 @@ int main() {
   insertProcQ(&ready_queue, pcb2); /* Inserimento di pcb2 nella coda dei processi in stato ready */
   insertProcQ(&ready_queue, pcb3); /* Inserimento di pcb3 nella coda dei processi in stato ready */
 
+  //termprint("==> passo controllo a scheduler\n", 1);
   scheduler(); /* Passaggio del controllo allo scheduler */
   return 0;
 }
@@ -60,7 +62,7 @@ pcb_t* initPCB(void (*f), int n){
   pcb->p_s.pc_epc = (memaddr)(f);
   pcb->p_s.reg_t9 = (memaddr)(f);
   pcb->p_s.reg_sp = RAMTOP-FRAMESIZE*n;
-  pcb->p_s.status = PROCESS_STATUS;
+  pcb->p_s.status = PROCESS_STATUS_1;
   pcb->priority = n;
   pcb->original_priority = n;
   process_counter++;

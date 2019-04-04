@@ -13,7 +13,6 @@ void save_state(state_t* source, state_t* destination) {
 	}
 }
 
-
 void aging(struct list_head* head){
 	struct list_head* scan;
 	list_for_each(scan, head){
