@@ -15,3 +15,6 @@ kernel.stab.umps
 
 # Files automatically created during boot
 *.umps
+
+# macchina
+phase1.5

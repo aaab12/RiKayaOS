@@ -3,14 +3,12 @@
 #include "pcb.h"
 #include "syscall.h"
 #include "interrupt.h"
-#include "main.h"
 #include "utils.h"
 
 /* SYSCALL/Breakpoint handler */
 void sysbk_handler(){
   /* Processo chiamante */
 	state_t* caller_process = (state_t *)SYSBK_OLDAREA;
-
   /* Il Program Counter del processo chiamante deve essere incrementato di una WORD_SIZE
    * per evitare loop, in quanto le SYSCALL che non comportano la terminazione di un processo
    * fanno tornare il controllo al flusso di esecuzione che ha richiesto la SYSCALL stessa.
@@ -70,21 +68,11 @@ void tlb_handler(){
 
 /* Interrupts handler */
 void int_handler(){
-	/* Processo interrotto (non necessariamente quello che ha sollevato l'interrupt) */
-	state_t* caller_process = (state_t *)INT_OLDAREA;
 	/* Linea da cui proviene l'interrupt */
 	int line = 0;
-	while ((line < INT_LINES) && (!CAUSE_INT_GET(getCAUSE(), line))) {
+	while ((line<10) && !(CAUSE_INT_GET(getCAUSE(), line))) {
 		line++;
 	}
-	/* Controllo se c'è un pcb attivo sul processore
-	 * se true salvo lo stato della CPU nel campo state del pcb */
-	if(current_process != NULL) {
-		current_process->cpu_slice += (TOD_LO - current_process_tod);	//aggionamento tempo pcb
-		current_process->cpu_time += (TOD_LO - current_process_tod);
-		save_state(caller_process, &current_process->p_s);
-	}
-
 	switch(line){
 		case INT_PLT:
 			plt_handler();

@@ -46,7 +46,7 @@ VPATH = $(UMPS2_DATA_DIR)
 
 .PHONY : all clean
 
-all : kernel.core.umps
+all : clean kernel.core.umps
 	@echo "==> done."
 
 kernel.core.umps : $(KERNEL)

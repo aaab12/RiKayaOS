@@ -1,6 +1,8 @@
 #ifndef _CONST_H
 #define _CONST_H
 
+#include <umps/cp0.h>
+
 /****************************************************************************
  *
  * This header file contains the global constant & macro definitions.
@@ -26,15 +28,15 @@
 
 /* STATUS */
 #define EXCEPTION_STATUS 0x18000000 /* EXCEPTION STATUS: Interrupt mascherati, VM off, Kernel mode e PLT on */
-#define PROCESS_STATUS 0x1800FF01 /* PROCESS STATUS: Interrupt abilitati, VM off, Kernel mode e PLT on */
+#define PROCESS_STATUS 0x18007F04 /* PROCESS STATUS: Interrupt abilitati, VM off, Kernel mode e PLT on */
 
 /* SCHEDULER */
 #define SCHED_TIME_SLICE 3000 /* 3000 microsecondi = 3 millisecondi */
-#define BUS_TIMESCALE 0x10000024 /* numero di tick del clock per microsecondo */
-#define TIME_SLICE SCHED_TIME_SLICE*(*(memaddr *)BUS_TIMESCALE) /* BUS_TIMESCALE*3000 clock_ticks = 3ms */
+#define TIME_SCALE 0x10000024 /* locazione del numero di tick del clock per microsecondo */
+#define TIME_SLICE SCHED_TIME_SLICE*(*(memaddr *)TIME_SCALE) /* BUS_TIMESCALE*3000 clock_ticks = 3ms */
 
 /* Macro che restituisce true se la interrupt è del tipo specificato */
-#define CAUSE_INT_GET(cause, int_number) ((cause) & (1 << ((int_number) + 8)))
+#define CAUSE_INT_GET(cause, int_number) ((cause) & CAUSE_IP(int_number))
 
 /* Numero delle linee di interrupt totali */
 #define INT_LINES 8

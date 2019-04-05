@@ -12,7 +12,6 @@ int main() {
   mkEmptyProcQ(&ready_queue); /* Inizializzazione lista processi in stato ready */
 
   process_counter = 0;
-  current_process_tod = 0;
   current_process = NULL;
 
   pcb_t* pcb1 = initPCB(test1, 1); /* Inizializza primo processo */

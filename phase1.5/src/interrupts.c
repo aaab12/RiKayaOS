@@ -3,12 +3,13 @@
 #include "listx.h"
 #include "pcb.h"
 #include "interrupt.h"
+#include "scheduler.h"
+#include "utils.h"
 #include "main.h"
 
 void plt_handler() {
-		if(current_process != NULL && current_process->cpu_slice >=SCHED_TIME_SLICE) {
-			insertProcQ(&ready_queue, current_process);
-			current_process = NULL;
-			setTIMER(SCHED_TIME_SLICE);
-		}
+	state_t* caller_process = (state_t *)INT_OLDAREA;
+	save_state(caller_process, &(current_process->p_s));
+	insertProcQ(&ready_queue, current_process);
+	scheduler();
 }
