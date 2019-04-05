@@ -2,9 +2,8 @@
 #include "listx.h"
 #include "pcb.h"
 #include "scheduler.h"
-#include <umps/libumps.h>
 #include "main.h"
-#include "handler.h"
+#include "utils.h"
 
 int main() {
   initNewAreas(); /* Iniziliazzazione delle new area */
@@ -24,44 +23,4 @@ int main() {
 
   scheduler(); /* Passaggio del controllo allo scheduler */
   return 0;
-}
-
-void initNewAreas(){
-  ((state_t *)SYSBK_NEWAREA)->pc_epc = (memaddr)sysbk_handler;
-  /* Il general purpose register t9 viene usato per
-   * migliorare l'efficienza della fase di linking e
-   * la velocità di esecuzione del codice risultante.
-   * (pag.72 princOfOperations.pdf)
-   */
-  ((state_t *)SYSBK_NEWAREA)->reg_t9 = (memaddr)sysbk_handler;
-	((state_t *)SYSBK_NEWAREA)->reg_sp = RAMTOP;
-	((state_t *)SYSBK_NEWAREA)->status = EXCEPTION_STATUS;
-
-  ((state_t *)PGMTRAP_NEWAREA)->pc_epc = (memaddr)pgmtrap_handler;
-  ((state_t *)PGMTRAP_NEWAREA)->reg_t9 = (memaddr)pgmtrap_handler;
-	((state_t *)PGMTRAP_NEWAREA)->reg_sp = RAMTOP;
-	((state_t *)PGMTRAP_NEWAREA)->status = EXCEPTION_STATUS;
-
-  ((state_t *)TLB_NEWAREA)->pc_epc = (memaddr)tlb_handler;
-  ((state_t *)TLB_NEWAREA)->reg_t9 = (memaddr)tlb_handler;
-	((state_t *)TLB_NEWAREA)->reg_sp = RAMTOP;
-	((state_t *)TLB_NEWAREA)->status = EXCEPTION_STATUS;
-
-  ((state_t *)INT_NEWAREA)->pc_epc = (memaddr)int_handler;
-  ((state_t *)INT_NEWAREA)->reg_t9 = (memaddr)int_handler;
-	((state_t *)INT_NEWAREA)->reg_sp = RAMTOP;
-	((state_t *)INT_NEWAREA)->status = EXCEPTION_STATUS;
-}
-
-pcb_t* initPCB(void (*f), int n){
-  pcb_t* pcb = allocPcb();
-  STST(&(pcb->p_s)); /* STST memorizza lo stato corrente del processore nella locazione di memoria fisica fornita  */
-  pcb->p_s.pc_epc = (memaddr)(f);
-  pcb->p_s.reg_t9 = (memaddr)(f);
-  pcb->p_s.reg_sp = RAMTOP-FRAMESIZE*n;
-  pcb->p_s.status = PROCESS_STATUS;
-  pcb->priority = n;
-  pcb->original_priority = n;
-  process_counter++;
-  return pcb;
 }
