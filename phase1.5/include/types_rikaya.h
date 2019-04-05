@@ -19,10 +19,6 @@ typedef struct pcb_t {
 	/* processor state, etc */
 	state_t       		p_s;
 
-	/* processor timer */
-	int cpu_time;
-	int cpu_slice;
-
 	/* process priority */
 	int			priority;
 	int 		original_priority;
