@@ -17,9 +17,9 @@ void sysbk_handler(){
 
 	/* Parametri della SYSCALL */
 	u32* arg0 = &(caller_process->reg_a0); /* Numero della SYSCALL */
-//	u32* arg1 = &(caller_process->reg_a1);
-//	u32* arg2 = &(caller_process->reg_a2);
-//	u32* arg3	= &(caller_process->reg_a3);
+	// u32* arg1 = &(caller_process->reg_a1);
+	// u32* arg2 = &(caller_process->reg_a2);
+	// u32* arg3	= &(caller_process->reg_a3);
 
 	u32* status = &(caller_process->status); /* Stato del processo al momento della chiamata (kernel/user mode) */
 	int  cause =   (caller_process->cause); /* Causa della SYSCALL (tipo di eccezione sollevato) */
@@ -75,10 +75,12 @@ void int_handler(){
 	}
 	switch(line){
 		case INT_PLT:
-			plt_handler();
+			plt_handler(); /* Process Local Timer handler */
+			break;
+		case INT_TIMER:
+			it_handler(); /* Interval Timer handler */
 			break;
 		case INT_PROCESSOR:
-		case INT_TIMER:
 		case INT_DISK:
 		case INT_TAPE:
 		case INT_NETWORK:

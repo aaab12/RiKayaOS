@@ -37,7 +37,8 @@ pcb_t* initPCB(void (*f), int n){
   pcb->p_s.pc_epc = (memaddr)(f);
   pcb->p_s.reg_t9 = (memaddr)(f);
   pcb->p_s.reg_sp = RAMTOP-FRAMESIZE*n;
-  pcb->p_s.status = PROCESS_STATUS;
+  pcb->p_s.status = PROCESS_STATUS_1; /* Status con PLT abilitato */
+  // pcb->p_s.status = PROCESS_STATUS_2; /* Status con PLT disabilitato */
   pcb->priority = n;
   pcb->original_priority = n;
   process_counter++;
@@ -62,4 +63,14 @@ void aging(struct list_head* head){
 	list_for_each(scan, head){
 		container_of(scan, pcb_t, p_next)->priority++;			/* Meccanismo di aging */
   }
+}
+
+/* Funzione per settare l'Interval Timer */
+void setIT(unsigned int val){
+  (*((memaddr *)BUS_INTERVALTIMER)) = val;
+}
+
+/* Funzione che controlla il 27esimo bit dello status (TE) */
+int get_PLT_bit(state_t* state){
+  return (state->status & (1U << 27));
 }

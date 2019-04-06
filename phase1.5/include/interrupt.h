@@ -8,4 +8,6 @@
 
 void plt_handler();
 
+void it_handler();
+
 #endif
