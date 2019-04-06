@@ -44,26 +44,31 @@ void sysbk_handler(){
 					PANIC(); /* SYSCALL non definita o non implementata */
 			}
 		} else { /* user mode */
-			/*
-			 * Lanciare TRAP
-			 */
+			/* Syscall invocata in user mode, quindi lancio TRAP */
+			pgmtrap_handler()
 		}
 	} else if (CAUSE_EXCCODE_GET(cause) == 9){ /* BREAKPOINT */
 		/*
 		 * Terminare il processo e la sua progenie
 		 * Passare il controllo allo scheduler
 		 */
+		terminate_process();
+		scheduler();
 	}
 }
 
 /* Program Traps handler */
 void pgmtrap_handler(){
-
+	termprint("TRAP\n", 0);
+	terminate_process();
+	PANIC();
 }
 
 /* TLB Management handler */
 void tlb_handler(){
-
+	termprint("TLB Exception\n", 0);
+	terminate_process();
+	PANIC();
 }
 
 /* Interrupts handler */
