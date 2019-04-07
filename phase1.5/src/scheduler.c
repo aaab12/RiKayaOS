@@ -1,7 +1,4 @@
-#include "const.h"
-#include <umps/libumps.h>
-#include "utils.h"
-#include "main.h"
+#include "scheduler.h"
 
 extern void log_process_order(int process);
 

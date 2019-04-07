@@ -1,8 +1,4 @@
 #include "utils.h"
-#include "const.h"
-#include "handler.h"
-#include "main.h"
-#include <umps/libumps.h>
 
 void initNewAreas(){
   ((state_t *)SYSBK_NEWAREA)->pc_epc = (memaddr)sysbk_handler;

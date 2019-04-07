@@ -1,10 +1,12 @@
-#ifndef INTERRUPT_H
-#define INTERRUPT_H
+#ifndef _INTERRUPT_H
+#define _INTERRUPT_H
 
-#include <umps/libumps.h>
 #include "const.h"
-#include "listx.h"
-#include "pcb.h"
+#include <umps/libumps.h>
+#include "main.h"
+#include "scheduler.h"
+#include "types_rikaya.h"
+#include "utils.h"
 
 void plt_handler();
 

@@ -1,6 +1,3 @@
-#include "main.h"
-#include "pcb.h"
-#include "scheduler.h"
 #include "syscall.h"
 
 /* Recursive Terminate Process */

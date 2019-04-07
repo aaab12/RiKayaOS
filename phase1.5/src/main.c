@@ -1,9 +1,4 @@
-#include "const.h"
-#include "listx.h"
-#include "pcb.h"
-#include "scheduler.h"
 #include "main.h"
-#include "utils.h"
 
 int main() {
   initNewAreas(); /* Iniziliazzazione delle new area */

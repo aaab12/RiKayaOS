@@ -1,9 +1,4 @@
-#include "const.h"
-#include "types_rikaya.h"
-#include "pcb.h"
-#include "syscall.h"
-#include "interrupt.h"
-#include "utils.h"
+#include "handler.h"
 
 /* SYSCALL/Breakpoint handler */
 void sysbk_handler(){
@@ -45,7 +40,7 @@ void sysbk_handler(){
 			}
 		} else { /* user mode */
 			/* Syscall invocata in user mode, quindi lancio TRAP */
-			pgmtrap_handler()
+			pgmtrap_handler();
 		}
 	} else if (CAUSE_EXCCODE_GET(cause) == 9){ /* BREAKPOINT */
 		/*

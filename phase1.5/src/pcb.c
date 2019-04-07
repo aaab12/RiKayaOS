@@ -1,7 +1,3 @@
-#include "const.h"
-#include "listx.h"
-#include <umps/libumps.h>
-
 #include "pcb.h"
 
 // pcbFree_table: array dei pcb free

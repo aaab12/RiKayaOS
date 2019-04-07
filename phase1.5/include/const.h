@@ -32,11 +32,11 @@
 /* STATUS */
 #define EXCEPTION_STATUS 0x18000000 /* EXCEPTION STATUS: Interrupt mascherati, VM off, Kernel mode e PLT on */
 
-#define PROCESS_STATUS_1 0x18007F04 /* PROCESS STATUS: Interrupt abilitati, VM off, Kernel mode e PLT on */
+#define PROCESS_STATUS_1 0x18007F04 /* PROCESS STATUS 1: Interrupt abilitati, VM off, Kernel mode e PLT on */
 // 0001 1 000 0 0 000000 01111111 00 000100
 // CP_U|T|V_M|x|B|xxxxxx|INT_MASK|xx|KU__IE
 
-#define PROCESS_STATUS_2 0x10007F04 /* PROCESS STATUS: Interrupt abilitati, VM off, Kernel mode e PLT off */
+#define PROCESS_STATUS_2 0x10007F04 /* PROCESS STATUS 2: Interrupt abilitati, VM off, Kernel mode e PLT off */
 // 0001 0 000 0 0 000000 01111111 00 000100
 // CP_U|T|V_M|x|B|xxxxxx|INT_MASK|xx|KU__IE
 
@@ -44,6 +44,11 @@
 #define SCHED_TIME_SLICE 3000 /* 3000 microsecondi = 3 millisecondi */
 #define TIME_SCALE 0x10000024 /* locazione del numero di tick del clock per microsecondo */
 #define TIME_SLICE SCHED_TIME_SLICE*(*(memaddr *)TIME_SCALE) /* BUS_TIMESCALE*3000 clock_ticks = 3ms */
+
+/* Utility definitions for the Cause CP0 register */
+#define CAUSE_EXCCODE_GET(cause) (((cause) & 0x0000007c) >> 2)
+#define CAUSE_EXCCODE_SET(cause, exc_code) (((cause) & 0xffffff83) | ((exc_code) << 2))
+#define CAUSE_CE_GET(cause) (cause & 0x30000000)
 
 /* Macro che restituisce true se la interrupt è del tipo specificato */
 #define CAUSE_INT_GET(cause, int_number) ((cause) & CAUSE_IP(int_number))
@@ -98,11 +103,6 @@
 
 #define STEPS 6
 #define GANTT_SIZE 20
-
-/* Utility definitions for the Cause CP0 register */
-#define CAUSE_EXCCODE_GET(cause) (((cause) & 0x0000007c) >> 2)
-#define CAUSE_EXCCODE_SET(cause, exc_code) (((cause) & 0xffffff83) | ((exc_code) << 2))
-#define CAUSE_CE_GET(cause) (cause & 0x30000000)
 
 #define	HIDDEN static
 #define	TRUE 	1

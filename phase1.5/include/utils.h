@@ -1,8 +1,7 @@
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef _UTILS_H
+#define _UTILS_H
 
-#include "const.h"
-#include "listx.h"
+#include "handler.h"
 #include "pcb.h"
 
 extern unsigned int termprint(char *str, unsigned int term);
