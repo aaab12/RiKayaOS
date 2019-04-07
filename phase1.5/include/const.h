@@ -31,8 +31,14 @@
 
 /* STATUS */
 #define EXCEPTION_STATUS 0x18000000 /* EXCEPTION STATUS: Interrupt mascherati, VM off, Kernel mode e PLT on */
+
 #define PROCESS_STATUS_1 0x18007F04 /* PROCESS STATUS: Interrupt abilitati, VM off, Kernel mode e PLT on */
+// 0001 1 000 0 0 000000 01111111 00 000100
+// CP_U|T|V_M|x|B|xxxxxx|INT_MASK|xx|KU__IE
+
 #define PROCESS_STATUS_2 0x10007F04 /* PROCESS STATUS: Interrupt abilitati, VM off, Kernel mode e PLT off */
+// 0001 0 000 0 0 000000 01111111 00 000100
+// CP_U|T|V_M|x|B|xxxxxx|INT_MASK|xx|KU__IE
 
 /* SCHEDULER */
 #define SCHED_TIME_SLICE 3000 /* 3000 microsecondi = 3 millisecondi */
