@@ -2,6 +2,10 @@
 
 extern void log_process_order(int process);
 
+extern struct list_head ready_queue;
+extern pcb_t* current_process;
+extern int process_counter;
+
 void scheduler(){
   current_process = NULL; /* Setto current_process a NULL per evitare che punti al processo precedentemente caricato quando avvengono interrupt con la ready_queue vuota */
   if (process_counter == 0){

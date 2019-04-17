@@ -1,5 +1,9 @@
 #include "syscall.h"
 
+extern struct list_head ready_queue;
+extern pcb_t* current_process;
+extern int process_counter;
+
 /* Recursive Terminate Process */
 void r_termine_process(pcb_t* p){
   pcb_t* temp;

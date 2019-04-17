@@ -1,5 +1,8 @@
 #include "interrupt.h"
 
+extern struct list_head ready_queue;
+extern pcb_t* current_process;
+
 /* Process Local Timer handler */
 void plt_handler() {
 	state_t* caller_process = (state_t *)INT_OLDAREA;

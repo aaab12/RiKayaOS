@@ -1,5 +1,7 @@
 #include "utils.h"
 
+extern int process_counter;
+
 void initNewAreas(){
   ((state_t *)SYSBK_NEWAREA)->pc_epc = (memaddr)sysbk_handler;
   /* Il general purpose register t9 viene usato per
