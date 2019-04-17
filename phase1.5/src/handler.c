@@ -70,7 +70,7 @@ void tlb_handler(){
 void int_handler(){
 	/* Linea da cui proviene l'interrupt */
 	int line = 0;
-	while ((line<10) && !(CAUSE_INT_GET(getCAUSE(), line))) {
+	while ((line<7) && !(CAUSE_INT_GET(getCAUSE(), line))) {
 		line++;
 	}
 	switch(line){

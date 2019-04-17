@@ -84,8 +84,8 @@ pcb_t *headProcQ(struct list_head *head) {
     return NULL;
   return container_of(head->next, pcb_t, p_next);
 }
-
-/* Inizializza la lista dei PCB istanziando la sentinella */
+/* Rimuove il PCB puntato da p dalla coda puntata da head
+ * NULL se lista vuota.*/
 pcb_t *removeProcQ(struct list_head *head) {
 	if(emptyProcQ(head))
 		return NULL;
