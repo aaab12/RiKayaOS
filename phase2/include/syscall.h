@@ -4,8 +4,24 @@
 #include "main.h"
 #include "pcb.h"
 
+void get_cpu_time(unsigned int *user, unsigned int *kernel, unsigned int *wallclock);
+
+int create_process(state_t *statep, int priority, void ** cpid);
+
 void r_termine_process(pcb_t* p);
 
 void terminate_process();
+
+void verhogen(int *semaddr);
+
+void passeren(int *semaddr);
+
+void wait_clock();
+
+int do_io(unsigned int command, unsigned int *register);
+
+void set_tutor();
+
+int spec_passup(int type, state_t *old, state_t *new);
 
 #endif

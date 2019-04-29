@@ -48,7 +48,6 @@
 /* Utility definitions for the Cause CP0 register */
 #define CAUSE_EXCCODE_GET(cause) (((cause) & 0x0000007c) >> 2)
 #define CAUSE_EXCCODE_SET(cause, exc_code) (((cause) & 0xffffff83) | ((exc_code) << 2))
-#define CAUSE_CE_GET(cause) (cause & 0x30000000)
 
 /* Macro che restituisce true se la interrupt è del tipo specificato */
 #define CAUSE_INT_GET(cause, int_number) ((cause) & CAUSE_IP(int_number))
@@ -70,7 +69,6 @@
 #define SYS1 		          1
 #define	SYS2 		          2
 #define SYS3              3
-#define TERMINATEPROCESS  (SYS3) /* Sulle slide la syscall 3 viene chiamata in modo diverso rispetto al file di test */
 #define SYS4		          4
 #define SYS5		          5
 #define SYS6		          6
@@ -79,6 +77,15 @@
 #define SYS9		          9
 #define SYS10		          10
 #define SYS11		          11
+#define GETCPUTIME        (SYS1)
+#define CREATEPROCESS     (SYS2)
+#define TERMINATEPROCESS  (SYS3)
+#define VERHOGEN          (SYS4)
+#define PASSEREN          (SYS5)
+#define WAITCLOCK         (SYS6)
+#define IOCOMMAND         (SYS7)
+#define SETTUTOR          (SYS8)
+#define SPECPASSUP        (SYS9)
 
 #define TRANSMITTED 5
 #define TRANSTATUS 2
