@@ -83,7 +83,7 @@ void tlb_handler(){
 /* Interrupts handler */
 void int_handler(){
 	/* Linea da cui proviene l'interrupt */
-	int line = 0;
+	int line = 1;
 	while ((line<7) && !(CAUSE_INT_GET(getCAUSE(), line))) {
 		line++;
 	}
@@ -94,12 +94,21 @@ void int_handler(){
 		case INT_TIMER:
 			it_handler(); /* Interval Timer handler */
 			break;
-		case INT_PROCESSOR:
 		case INT_DISK:
+			disk_handler();
+			break;
 		case INT_TAPE:
+			tape_handler();
+			break:
 		case INT_NETWORK:
+			network_handler();
+			break;
 		case INT_PRINTER:
+			printer_handler();
+			break;
 		case INT_TERMINAL:
+			terminal_handler();
+			break;
 		default:
 			PANIC(); /* Interrupt non implementato o linea errata */
 	}

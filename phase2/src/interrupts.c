@@ -20,3 +20,23 @@ void it_handler(){
 	setIT(TIME_SLICE); /* ACK */
 	scheduler();
 }
+
+void disk_handler(){
+
+}
+
+void tape_handler(){
+
+}
+
+void network_handler(){
+
+}
+
+void printer_handler(){
+
+}
+
+void terminal_handler(){
+
+}

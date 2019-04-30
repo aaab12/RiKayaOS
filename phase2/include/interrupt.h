@@ -12,4 +12,14 @@ void plt_handler();
 
 void it_handler();
 
+void disk_handler();
+
+void tape_handler();
+
+void network_handler();
+
+void printer_handler();
+
+void terminal_handler();
+
 #endif
