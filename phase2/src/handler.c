@@ -23,31 +23,31 @@ void sysbk_handler(){
 		if ((*status & STATUS_KUp) == 0 ){ /* kernel mode */
 			switch (*arg0){
 				case GETCPUTIME:
-					get_cpu_time();
+					get_cpu_time(arg1, arg2, arg3);
 					break;
 				case CREATEPROCESS:
-					create_process();
+					create_process((state_t) arg1, (int) *arg2, (void **) arg3);
 					break;
 				case TERMINATEPROCESS:
 					terminate_process();
 					break;
 				case VERHOGEN:
-					verhogen();
+					verhogen((int) arg1);
 					break;
 				case PASSEREN:
-					passeren();
+					passeren((int) arg1);
 					break;
 				case WAITCLOCK:
 					wait_clock();
 					break;
 				case IOCOMMAND:
-					do_io();
+					do_io(*arg1, arg2);
 					break;
 				case SETTUTOR:
 					set_tutor();
 					break;
 				case SPECPASSUP:
-					spec_passup();
+					spec_passup((int) *arg1, (state_t) arg2, (state_t) arg3);
 					break;
 				default:
 					PANIC(); /* SYSCALL non definita o non implementata */
