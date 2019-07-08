@@ -68,14 +68,14 @@ void sysbk_handler(){
 
 /* Program Traps handler */
 void pgmtrap_handler(){
-	termprint("TRAP\n", 0);
+	print("TRAP\n");
 	terminate_process();
 	PANIC();
 }
 
 /* TLB Management handler */
 void tlb_handler(){
-	termprint("TLB Exception\n", 0);
+	print("TLB Exception\n");
 	terminate_process();
 	PANIC();
 }

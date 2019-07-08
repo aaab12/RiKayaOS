@@ -21,12 +21,4 @@
 /* SCHEDULER */
 #define TIME_SLICE SCHED_TIME_SLICE*(*(memaddr *)TIME_SCALE) /* BUS_TIMESCALE*3000 clock_ticks = 3ms */
 
-#define TRANSMITTED 5
-#define PRINTCHR 2
-#define CHAROFFSET 8
-#define DEVREGSIZE 16
-#define READY 1
-#define DEVREGLEN 4
-#define BUSY 3
-
 #endif
