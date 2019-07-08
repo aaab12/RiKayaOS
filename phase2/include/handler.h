@@ -1,7 +1,7 @@
 #ifndef _HANDLER_H
 #define _HANDLER_H
 
-#include "const.h"
+#include "const_rikaya.h"
 #include "interrupt.h"
 #include <umps/libumps.h>
 #include "scheduler.h"

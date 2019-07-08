@@ -7,14 +7,14 @@ int process_counter;	/* Contatore dei processi */
 int main() {
   initNewAreas(); /* Iniziliazzazione delle new area */
   initPcbs(); /* Inizializzazione lista PCB liberi */
-  initAsl(); /* Inizializzazione lista SEMD liberi */
+  initASL(); /* Inizializzazione lista SEMD liberi */
   mkEmptyProcQ(&ready_queue); /* Inizializzazione lista processi in stato ready */
 
   process_counter = 0;
   current_process = NULL;
 
   // Per ora settiamo priorità 1
-  pcb_t* pcb1 = initPCB(test, 1); /* Inizializza processo */
+  pcb_t* pcb = initPCB(test, 1); /* Inizializza processo */
 
   insertProcQ(&ready_queue, pcb); /* Inserimento di pcb nella coda dei processi in stato ready */
 

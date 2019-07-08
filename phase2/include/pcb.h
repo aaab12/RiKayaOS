@@ -1,7 +1,7 @@
 #ifndef _PCB_H
 #define _PCB_H
 
-#include "const.h"
+#include "const_rikaya.h"
 #include "types_rikaya.h"
 
 //USER

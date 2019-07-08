@@ -1,4 +1,4 @@
-#include "const.h"
+#include "const_rikaya.h"
 #include "listx.h"
 #include <umps/libumps.h>
 

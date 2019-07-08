@@ -4,7 +4,7 @@
 #include "handler.h"
 #include "pcb.h"
 
-extern unsigned int termprint(char *str, unsigned int term);
+unsigned int termprint(char *str, unsigned int term);
 
 void initNewAreas();
 

@@ -1,3 +1,4 @@
+#include "const.h"
 #include "utils.h"
 
 extern int process_counter;
@@ -34,7 +35,7 @@ pcb_t* initPCB(void (*f), int n){
   STST(&(pcb->p_s)); /* STST memorizza lo stato corrente del processore nella locazione di memoria fisica fornita  */
   pcb->p_s.pc_epc = (memaddr)(f);
   pcb->p_s.reg_t9 = (memaddr)(f);
-  pcb->p_s.reg_sp = RAMTOP-FRAMESIZE*n;
+  pcb->p_s.reg_sp = RAMTOP-FRAME_SIZE*n;
   pcb->p_s.status = PROCESS_STATUS_1; /* Status con PLT abilitato */
   // pcb->p_s.status = PROCESS_STATUS_2; /* Status con PLT disabilitato */
   pcb->priority = n;
@@ -71,4 +72,83 @@ void setIT(unsigned int val){
 /* Funzione che controlla il 27esimo bit dello status (TE) */
 int get_PLT_bit(state_t* state){
   return (state->status & (1U << 27));
+}
+
+/******************************************************************************
+ * I/O Routines to write on a terminal
+ ******************************************************************************/
+
+typedef unsigned int devreg;
+
+#define DEVREGSIZE 16
+#define CHAROFFSET 8
+#define BUSY 3
+
+/* This function returns the terminal transmitter status value given its address */
+devreg termstat(memaddr *stataddr)
+{
+    return ((*stataddr) & STATUSMASK);
+}
+
+/* This function prints a string on specified terminal and returns TRUE if
+ * print was successful, FALSE if not   */
+unsigned int termprint(char *str, unsigned int term)
+{
+
+    memaddr *statusp;
+    memaddr *commandp;
+
+    devreg stat;
+    devreg cmd;
+
+    unsigned int error = FALSE;
+
+    if (term < DEV_PER_INT)
+    {
+        /* terminal is correct */
+        /* compute device register field addresses */
+        statusp = (devreg *)(TERM0ADDR + (term * DEVREGSIZE) + (TRANSTATUS * DEV_REG_LEN));
+        commandp = (devreg *)(TERM0ADDR + (term * DEVREGSIZE) + (TRANCOMMAND * DEV_REG_LEN));
+
+        /* test device status */
+        stat = termstat(statusp);
+        if ((stat == DEV_S_READY) || (stat == DEV_TTRS_S_CHARTRSM))
+        {
+            /* device is available */
+
+            /* print cycle */
+            while ((*str != '\0') && (!error))
+            {
+                cmd = (*str << CHAROFFSET) | DEV_PRNT_C_PRINTCHR;
+                *commandp = cmd;
+
+                /* busy waiting */
+                while ((stat = termstat(statusp)) == BUSY)
+                    ;
+
+                /* end of wait */
+                if (stat != DEV_TTRS_S_CHARTRSM)
+                {
+                    error = TRUE;
+                }
+                else
+                {
+                    /* move to next char */
+                    str++;
+                }
+            }
+        }
+        else
+        {
+            /* device is not available */
+            error = TRUE;
+        }
+    }
+    else
+    {
+        /* wrong terminal device number */
+        error = TRUE;
+    }
+
+    return (!error);
 }

@@ -2,6 +2,7 @@
 #define _INTERRUPT_H
 
 #include "const.h"
+#include "const_rikaya.h"
 #include <umps/libumps.h>
 #include "main.h"
 #include "scheduler.h"
