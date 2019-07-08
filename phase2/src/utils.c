@@ -30,16 +30,15 @@ void initNewAreas(){
 	((state_t *)INT_NEWAREA)->status = EXCEPTION_STATUS;
 }
 
-pcb_t* initPCB(void (*f), int n){
+pcb_t* initPCB(void (*f), int priority){
   pcb_t* pcb = allocPcb();
   STST(&(pcb->p_s)); /* STST memorizza lo stato corrente del processore nella locazione di memoria fisica fornita  */
   pcb->p_s.pc_epc = (memaddr)(f);
   pcb->p_s.reg_t9 = (memaddr)(f);
-  pcb->p_s.reg_sp = RAMTOP-FRAME_SIZE*n;
-  pcb->p_s.status = PROCESS_STATUS_1; /* Status con PLT abilitato */
-  // pcb->p_s.status = PROCESS_STATUS_2; /* Status con PLT disabilitato */
-  pcb->priority = n;
-  pcb->original_priority = n;
+  pcb->p_s.reg_sp = RAMTOP-FRAME_SIZE;
+  pcb->p_s.status = PROCESS_STATUS; /* Status con PLT abilitato */
+  pcb->priority = priority;
+  pcb->original_priority = priority;
   process_counter++;
   return pcb;
 }
@@ -67,9 +66,4 @@ void aging(struct list_head* head){
 /* Funzione per settare l'Interval Timer */
 void setIT(unsigned int val){
   (*((memaddr *)BUS_INTERVALTIMER)) = val;
-}
-
-/* Funzione che controlla il 27esimo bit dello status (TE) */
-int get_PLT_bit(state_t* state){
-  return (state->status & (1U << 27));
 }

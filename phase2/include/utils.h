@@ -16,6 +16,4 @@ void aging(struct list_head* head);
 
 void setIT(unsigned int val);
 
-int get_PLT_bit(state_t* state);
-
 #endif
