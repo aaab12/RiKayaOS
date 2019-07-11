@@ -4,7 +4,7 @@
 #include "main.h"
 #include "pcb.h"
 
-//void get_cpu_time(unsigned int *user, unsigned int *kernel, unsigned int *wallclock);
+void get_cpu_time(unsigned int *user, unsigned int *kernel, unsigned int *wallclock);
 
 //int create_process(state_t *statep, int priority, void ** cpid);
 

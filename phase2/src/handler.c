@@ -1,5 +1,7 @@
 #include "handler.h"
 
+extern pcb_t* current_process;
+
 /* SYSCALL/Breakpoint handler */
 void sysbk_handler(){
   /* Processo chiamante */
@@ -9,6 +11,8 @@ void sysbk_handler(){
    * fanno tornare il controllo al flusso di esecuzione che ha richiesto la SYSCALL stessa.
    */
 	caller_process->pc_epc += WORD_SIZE;
+
+	kernel_mode(current_process); /* Il processo entra in kernel mode */
 
 	/* Parametri della SYSCALL */
 	U32* arg0 = &(caller_process->reg_a0); /* Numero della SYSCALL */
@@ -23,7 +27,7 @@ void sysbk_handler(){
 		if ((*status & STATUS_KUp) == 0 ){ /* kernel mode */
 			switch (*arg0){
 				case GETCPUTIME:
-					//get_cpu_time(arg1, arg2, arg3);
+					get_cpu_time(arg1, arg2, arg3);
 					break;
 				case CREATEPROCESS:
 					//create_process((state_t) *arg1, (int) arg2, (void **) arg3);
@@ -82,6 +86,8 @@ void tlb_handler(){
 
 /* Interrupts handler */
 void int_handler(){
+	kernel_mode(current_process); /* Il processo entra in kernel mode */
+
 	/* Linea da cui proviene l'interrupt */
 	int line = 1;
 	while ((line<7) && !(CAUSE_IP_GET(getCAUSE(), line))) {

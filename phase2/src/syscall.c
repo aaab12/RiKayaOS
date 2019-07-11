@@ -4,9 +4,13 @@ extern struct list_head ready_queue;
 extern pcb_t* current_process;
 extern int process_counter;
 
-//void get_cpu_time(unsigned int *user, unsigned int *kernel, unsigned int *wallclock){
+void get_cpu_time(unsigned int *user, unsigned int *kernel, unsigned int *wallclock){
+  user_mode(current_process); /* Il processo torna in user mode (ed aggiorna la quantita di tempo trascorsa in kernel mode) */
 
-//}
+  if(user) *user = current_process->user_time_total;
+  if(kernel) *kernel = current_process->kernel_time_total;
+  if(wallclock) *wallclock = (TOD_LO - current_process->wallclock_time_start);
+}
 
 //int create_process(state_t *statep, int priority, void ** cpid){
 

@@ -14,6 +14,7 @@ void scheduler(){
     current_process->priority = current_process->original_priority; /* Ripristino della priorità originale */
 		aging(&ready_queue); /* Meccanismo di aging */
     setTIMER(TIME_SLICE); /* Settaggio del time slice */
+    user_mode(current_process); /* Il processo si avvia in user mode */
 		LDST(&current_process->p_s); /* Esecuzione del processo tramite il caricamento del suo stato nello stato del processore */
 	} else {
     WAIT(); /* Il processore va in standby ed aspetta che gli venga segnalato di riprendere l'esecuzione (tramite reset o interrupt) */

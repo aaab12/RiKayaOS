@@ -16,4 +16,8 @@ void aging(struct list_head* head);
 
 void setIT(unsigned int val);
 
+void kernel_mode(pcb_t *process);
+
+void user_mode(pcb_t *process);
+
 #endif

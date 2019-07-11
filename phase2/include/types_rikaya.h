@@ -23,8 +23,10 @@ typedef struct pcb_t {
 	int priority;
 	int original_priority;
 
-	/* tracciamento del tempo di esecuzione */
-	int time;
+	/* time variables*/
+	U32 user_time_start, user_time_total;
+	U32 kernel_time_start, kernel_time_total;
+	U32 wallclock_time_start;
 
 	/* key of the semaphore on which the process is eventually blocked */
 	int *p_semkey;
