@@ -35,7 +35,7 @@ int create_process(state_t *statep, int priority, void ** cpid){
 }
 
 /* SYS3: */
-void terminate_process(void ** pid){
+int terminate_process(void ** pid){
   pcb_t *pcb;
   pcb_t *parent = NULL;
   pcb_t *tutor = NULL;
@@ -47,19 +47,19 @@ void terminate_process(void ** pid){
 
   if(pcb != current_process){ /* Il processo da terminare deve essere il corrente o discendente del corrente */
     parent = pcb;
-    while(parent = parent->p_parent)
+    while((parent = parent->p_parent))
       if(current_process == parent) break;
     return -1; /* Se non è discendente del processo corrente, errore */
   }
 
   tutor = pcb;
-  while(!(parent = parent->p_parent)->tutor); /* Trova il primo antenato tutor */
+  while(!(tutor = tutor->p_parent)->tutor); /* Trova il primo antenato tutor */
 
   // if(pcb->p_semkey){
   //   *pcb->p_semkey += 1;
   // }
 
-  while(!emptyChild(pcb)) insertChild(parent, removeChild(pcb)); /* Se il processo da terminare ha figli, diventano figli del parent */
+  while(!emptyChild(pcb)) insertChild(tutor, removeChild(pcb)); /* Se il processo da terminare ha figli, diventano figli del tutor */
   outChild(pcb); /* Rimuove il processo dalla lista dei figli di suo padre */
   outBlocked(pcb); /* Rimuove il processo dal semaforo su cui è eventualmente bloccato */
   outProcQ(&ready_queue, pcb); /* Rimuove il processo dalla ready_queue */
@@ -91,7 +91,7 @@ void terminate_process(void ** pid){
 
 /* SYS8: imposta il processo corrente come tutor */
 void set_tutor(){
-  current_process->tutor = true;
+  current_process->tutor = TRUE;
 }
 
 //int spec_passup(int type, state_t *old, state_t *new){

@@ -8,7 +8,7 @@ void get_cpu_time(unsigned int *user, unsigned int *kernel, unsigned int *wallcl
 
 int create_process(state_t *statep, int priority, void ** cpid);
 
-void terminate_process(void ** pid);
+int terminate_process(void ** pid);
 
 //void verhogen(int *semaddr);
 

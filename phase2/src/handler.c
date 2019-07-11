@@ -30,10 +30,10 @@ void sysbk_handler(){
 					get_cpu_time(arg1, arg2, arg3);
 					break;
 				case CREATEPROCESS:
-					//create_process((state_t) *arg1, (int) arg2, (void **) arg3);
+					create_process((state_t *) arg1, (int) arg2, (void **) arg3);
 					break;
 				case TERMINATEPROCESS:
-					//terminate_process();
+					terminate_process((void **) arg1);
 					break;
 				case VERHOGEN:
 					//verhogen((int) arg1);
@@ -65,7 +65,7 @@ void sysbk_handler(){
 		 * Terminare il processo e la sua progenie
 		 * Passare il controllo allo scheduler
 		 */
-		terminate_process();
+		terminate_process(0);
 		scheduler();
 	}
 }
@@ -73,14 +73,14 @@ void sysbk_handler(){
 /* Program Traps handler */
 void pgmtrap_handler(){
 	print("TRAP\n");
-	terminate_process();
+	terminate_process(0);
 	PANIC();
 }
 
 /* TLB Management handler */
 void tlb_handler(){
 	print("TLB Exception\n");
-	terminate_process();
+	terminate_process(0);
 	PANIC();
 }
 
