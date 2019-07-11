@@ -6,6 +6,7 @@
 #include "const_rikaya.h"
 
 typedef unsigned int memaddr;
+typedef uint8_t boolean;
 
 /* Process Control Block (PCB) data structure */
 typedef struct pcb_t {
@@ -27,6 +28,9 @@ typedef struct pcb_t {
 	U32 user_time_start, user_time_total;
 	U32 kernel_time_start, kernel_time_total;
 	U32 wallclock_time_start;
+
+	/* tutor boolean */
+	boolean tutor;
 
 	/* key of the semaphore on which the process is eventually blocked */
 	int *p_semkey;
