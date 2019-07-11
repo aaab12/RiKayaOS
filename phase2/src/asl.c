@@ -33,7 +33,7 @@ semd_t* getSemd(int *key) {
   }
 
 /* Inizializzazione struttura ASL contenente tutti gli elementi della semdTable */
-void initASL() {
+void initAsl() {
 	INIT_LIST_HEAD(&semdFree_h);		//sentinella della lista dei semafori liberi
 	INIT_LIST_HEAD(&semd_h);			//sentinella della lista dei semafori attivi
 	int i;

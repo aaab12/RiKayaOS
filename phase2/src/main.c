@@ -7,7 +7,7 @@ int process_counter;	/* Contatore dei processi */
 int main() {
   initNewAreas(); /* Iniziliazzazione delle new area */
   initPcbs(); /* Inizializzazione lista PCB liberi */
-  initASL(); /* Inizializzazione lista SEMD liberi */
+  initAsl(); /* Inizializzazione lista SEMD liberi */
   mkEmptyProcQ(&ready_queue); /* Inizializzazione lista processi in stato ready */
 
   process_counter = 0;

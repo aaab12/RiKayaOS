@@ -51,7 +51,7 @@ void save_state(state_t* source, state_t* destination) {
 	destination->hi = source->hi;
 	destination->lo = source->lo;
 	int i;
-	for(i = 0; i <= 29; i++) {
+	for(i = 0; i <= 29; i++){
 		destination->gpr[i] = source->gpr[i];
 	}
 }

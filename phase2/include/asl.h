@@ -8,7 +8,7 @@ void delTree(pcb_t* p);
 
 /* ASL handling functions */
 semd_t* getSemd(int *key);
-void initASL();
+void initAsl();
 
 int insertBlocked(int *key,pcb_t* p);
 pcb_t* removeBlocked(int *key);
