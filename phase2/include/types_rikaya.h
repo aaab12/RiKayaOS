@@ -1,6 +1,7 @@
 #ifndef _TYPES11_H
 #define _TYPES11_H
 
+#include <stdint.h>
 #include <umps/types.h>
 #include "listx.h"
 #include "const_rikaya.h"
