@@ -10,35 +10,37 @@ typedef unsigned int memaddr;
 /* Process Control Block (PCB) data structure */
 typedef struct pcb_t {
 	/*process queue fields */
-	struct list_head	p_next;
+	struct list_head p_next;
 
 	/*process tree fields */
-	struct pcb_t		*p_parent;
-	struct list_head	p_child,
-						p_sib;
+	struct pcb_t *p_parent;
+	struct list_head p_child, p_sib;
 
 	/* processor state, etc */
-	state_t       		p_s;
+	state_t p_s;
 
 	/* process priority */
-	int					priority;
-	int					original_priority;
+	int priority;
+	int original_priority;
+
+	/* tracciamento del tempo di esecuzione */
+	int time;
 
 	/* key of the semaphore on which the process is eventually blocked */
-	int					*p_semkey;
+	int *p_semkey;
 } pcb_t;
 
 
 
 /* Semaphore Descriptor (SEMD) data structure */
 typedef struct semd_t {
-	struct list_head	s_next;
+	struct list_head s_next;
 
 	// Semaphore key
-	int					*s_key;
+	int *s_key;
 
 	// Queue of PCBs blocked on the semaphore
-	struct list_head	s_procQ;
+	struct list_head s_procQ;
 } semd_t;
 
 typedef struct semdev {

@@ -318,7 +318,7 @@ typedef int S32;
 #define NUM_LINES 7 /* Linee di interrupt */
 #define NUM_AREAS 8 /* numero delle new/old areas */
 #define NUM_SEMAPHORES MAXPROC+1  /* definiamo il numero di semafori */
-#define SCHED_LOCK NUM_SEMAPHORES-1 /* Il lock per lo scheduler � l'ultimo */
+#define SCHED_LOCK NUM_SEMAPHORES-1 /* Il lock per lo scheduler è l'ultimo */
 #define MAX_CPU 16
 
 #define INT_OLDAREA_INDEX 0

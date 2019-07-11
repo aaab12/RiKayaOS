@@ -10,7 +10,7 @@
 /* STATUS */
 #define EXCEPTION_STATUS 0x18000000 /* EXCEPTION STATUS: Interrupt mascherati, VM off, Kernel mode e PLT on */
 
-#define PROCESS_STATUS 0x18007F04 /* PROCESS STATUS 1: Interrupt abilitati, VM off, Kernel mode e PLT on */
+#define PROCESS_STATUS 0x18007F04 /* PROCESS STATUS: Interrupt abilitati, VM off, Kernel mode e PLT on */
 // 0001 1 000 0 0 000000 01111111 00 000100
 // CP_U|T|V_M|x|B|xxxxxx|INT_MASK|xx|KU__IE
 
