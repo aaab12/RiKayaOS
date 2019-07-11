@@ -16,7 +16,6 @@ int main() {
   // Per ora settiamo priorità 1
   pcb_t* pcb = initPCB(test, 1); /* Inizializza processo */
 
-  /* IMPOSTARE PCB COME TUTOR */
   insertProcQ(&ready_queue, pcb); /* Inserimento di pcb nella coda dei processi in stato ready */
 
   scheduler(); /* Passaggio del controllo allo scheduler */

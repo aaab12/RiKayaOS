@@ -40,6 +40,7 @@ pcb_t* initPCB(void (*f), int priority){
   pcb->priority = priority;
   pcb->original_priority = priority;
   pcb->wallclock_time_start = TOD_LO; /* Il processo nasce al tempo TOD_LO */
+  pcb->tutor = true; /* Il processo principale è tutor */
   process_counter++;
   return pcb;
 }

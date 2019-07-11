@@ -89,9 +89,10 @@ void terminate_process(void ** pid){
 
 //}
 
-//void set_tutor(){
-
-//}
+/* SYS8: imposta il processo corrente come tutor */
+void set_tutor(){
+  current_process->tutor = true;
+}
 
 //int spec_passup(int type, state_t *old, state_t *new){
 
