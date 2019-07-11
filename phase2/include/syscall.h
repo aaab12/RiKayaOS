@@ -18,7 +18,7 @@ void terminate_process(void ** pid);
 
 //int do_io(unsigned int command, unsigned int *register);
 
-//void set_tutor();
+void set_tutor();
 
 //int spec_passup(int type, state_t *old, state_t *new);
 
