@@ -6,7 +6,7 @@
 
 void get_cpu_time(unsigned int *user, unsigned int *kernel, unsigned int *wallclock);
 
-//int create_process(state_t *statep, int priority, void ** cpid);
+int create_process(state_t *statep, int priority, void ** cpid);
 
 //void r_termine_process(pcb_t* p);
 

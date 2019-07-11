@@ -12,9 +12,25 @@ void get_cpu_time(unsigned int *user, unsigned int *kernel, unsigned int *wallcl
   if(wallclock) *wallclock = (TOD_LO - current_process->wallclock_time_start);
 }
 
-//int create_process(state_t *statep, int priority, void ** cpid){
+int create_process(state_t *statep, int priority, void ** cpid){
+  pcb_t *new_process = allocPcb(); /* Rimuove un PCB dalla pcbFree */
 
-//}
+  if (cpid) *((pcb_t **)cpid) = new_process; /* Se cpid != NULL, *cpid contiene indirizzo del processo figlio */
+
+  if (!new_process) return -1; /* Se la pcbFree è vuota, ritorna -1 */
+
+  new_process->priority = priority;
+  new_process->original_priority = priority;
+
+  save_state(statep, &(new_process->p_s)); /* Lo stato del figlio è uguale allo stato del padre */
+
+  new_process->wallclock_time_start = TOD_LO; /* Il processo nasce al tempo TOD_LO */
+
+  insertChild(current_process, new_process); /* Inserisce il nuovo processo come ultimo figlio del processo corrente */
+  insertProcQ(&ready_queue, new_process); /* Inserisce il nuovo processo nella coda dei processi in stato ready */
+
+  return 0;
+}
 
 //void verhogen(int *semaddr){
 
