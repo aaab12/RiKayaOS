@@ -36,10 +36,10 @@ void sysbk_handler(){
 					terminate_process((void **) arg1);
 					break;
 				case VERHOGEN:
-					//verhogen((int) arg1);
+					verhogen((int *) arg1);
 					break;
 				case PASSEREN:
-					//passeren((int) arg1);
+					passeren((int *) arg1);
 					break;
 				case WAITCLOCK:
 					//wait_clock();

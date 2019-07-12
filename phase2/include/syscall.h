@@ -10,9 +10,9 @@ int create_process(state_t *statep, int priority, void ** cpid);
 
 int terminate_process(void ** pid);
 
-//void verhogen(int *semaddr);
+void verhogen(int *semaddr);
 
-//void passeren(int *semaddr);
+void passeren(int *semaddr);
 
 //void wait_clock();
 

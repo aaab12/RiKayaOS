@@ -55,9 +55,9 @@ int terminate_process(void ** pid){
   tutor = pcb;
   while(!(tutor = tutor->p_parent)->tutor); /* Trova il primo antenato tutor */
 
-  // if(pcb->p_semkey){
-  //   *pcb->p_semkey += 1;
-  // }
+  if(pcb->p_semkey){ /* Se il processo è bloccato su un semaforo, rilascio la risorsa */
+    *pcb->p_semkey += 1;
+  }
 
   while(!emptyChild(pcb)) insertChild(tutor, removeChild(pcb)); /* Se il processo da terminare ha figli, diventano figli del tutor */
   outChild(pcb); /* Rimuove il processo dalla lista dei figli di suo padre */
@@ -73,13 +73,30 @@ int terminate_process(void ** pid){
   return 0;
 }
 
-//void verhogen(int *semaddr){
+void verhogen(int *semaddr){
+  pcb_t *pcb;
 
-//}
+  *semaddr += 1; /* Aumenta il valore del semaforo */
 
-//void passeren(int *semaddr){
+  if(*semaddr >= 0){ /* minore? */
+    pcb = removeBlocked(semaddr); /* Recupero del primo processo bloccato sul semaforo */
+    if(pcb){ /* Se la key del semaforo è presente */
+      pcb->priority = pcb->original_priority; /* Ripristino della priorità originale */
+      insertProcQ(&ready_queue, pcb); /* Inserisce il processo sbloccato nella coda dei processi in stato ready */
+    }
+  }
+}
 
-//}
+void passeren(int *semaddr){
+  *semaddr += 1; /* Diminuisce il valore del semaforo */
+  if(*semaddr < 0){ /* Se il valore del semaforo è negativo */
+    outProcQ(&ready_queue, current_process); /* Rimuove il processo dalla ready queue */
+    insertBlocked(semaddr, current_process); /* Blocca il processo sul semaforo */
+    save_state((state_t *)SYSBK_OLDAREA, &current_process->p_s); /* Ripristino lo stato originario del processo */
+    user_mode(current_process); /* Il processo torna in user mode */
+    scheduler(); /* Il controllo passa allo scheduler */
+  }
+}
 
 //void wait_clock(){
 
