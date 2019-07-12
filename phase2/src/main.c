@@ -3,6 +3,8 @@
 struct list_head ready_queue; /* Coda dei processi in stato ready */
 pcb_t* current_process; /* Puntatore al processo attualmente in esecuzione */
 int process_counter;	/* Contatore dei processi */
+int clock_semaphore;
+int clock_semaphore_counter;
 
 int main() {
   initNewAreas(); /* Iniziliazzazione delle new area */
@@ -12,6 +14,9 @@ int main() {
 
   process_counter = 0;
   current_process = NULL;
+
+  clock_semaphore = 0;
+  clock_semaphore_counter = 0;
 
   // Per ora settiamo priorità 1
   pcb_t* pcb = initPCB(test, 1); /* Inizializza processo */

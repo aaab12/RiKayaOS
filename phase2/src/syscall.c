@@ -3,6 +3,8 @@
 extern struct list_head ready_queue;
 extern pcb_t* current_process;
 extern int process_counter;
+extern int clock_semaphore;
+extern int clock_semaphore_counter;
 
 /* SYS1: ritorna il tempo passato in user mode, kernel mode e tempo totale trascorso dalla prima attivazione */
 void get_cpu_time(unsigned int *user, unsigned int *kernel, unsigned int *wallclock){
@@ -73,6 +75,7 @@ int terminate_process(void ** pid){
   return 0;
 }
 
+/* SYS4: rilascio di un semaforo */
 void verhogen(int *semaddr){
   pcb_t *pcb;
 
@@ -87,8 +90,9 @@ void verhogen(int *semaddr){
   }
 }
 
+/* SYS5: richiesta di un semaforo */
 void passeren(int *semaddr){
-  *semaddr += 1; /* Diminuisce il valore del semaforo */
+  *semaddr -= 1; /* Diminuisce il valore del semaforo */
   if(*semaddr < 0){ /* Se il valore del semaforo è negativo */
     outProcQ(&ready_queue, current_process); /* Rimuove il processo dalla ready queue */
     insertBlocked(semaddr, current_process); /* Blocca il processo sul semaforo */
@@ -98,9 +102,11 @@ void passeren(int *semaddr){
   }
 }
 
-//void wait_clock(){
-
-//}
+/* SYS6: sospende il processo per 100ms */
+void wait_clock(){
+  passeren(&clock_semaphore); /* P sul semaforo del clock */
+  clock_semaphore_counter++;
+}
 
 //int do_io(unsigned int command, unsigned int *register){
 
