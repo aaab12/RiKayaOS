@@ -108,9 +108,10 @@ void wait_clock(){
   clock_semaphore_counter++;
 }
 
-//int do_io(unsigned int command, unsigned int *register){
+int do_io(unsigned int command, unsigned int *reg, unsigned int rw){
 
-//}
+  return 0; /* Per evitare warning ora */
+}
 
 /* SYS8: imposta il processo corrente come tutor */
 void set_tutor(){

@@ -27,7 +27,7 @@ void sysbk_handler(){
 		if ((*status & STATUS_KUp) == 0 ){ /* kernel mode */
 			switch (*arg0){
 				case GETCPUTIME:
-					get_cpu_time(arg1, arg2, arg3);
+					get_cpu_time((unsigned int *) arg1, (unsigned int *) arg2, (unsigned int *) arg3);
 					break;
 				case CREATEPROCESS:
 					create_process((state_t *) arg1, (int) arg2, (void **) arg3);
@@ -42,13 +42,13 @@ void sysbk_handler(){
 					passeren((int *) arg1);
 					break;
 				case WAITCLOCK:
-					//wait_clock();
+					wait_clock();
 					break;
 				case WAITIO:
-					//do_io(*arg1, arg2);
+					do_io((unsigned int) arg1, (unsigned int *) arg2, (unsigned int) arg3);
 					break;
 				case SETTUTOR:
-					//set_tutor();
+					set_tutor();
 					break;
 				case SPECPASSUP:
 					//spec_passup((int) *arg1, (state_t) arg2, (state_t) arg3);

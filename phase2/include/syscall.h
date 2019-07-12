@@ -16,7 +16,7 @@ void passeren(int *semaddr);
 
 void wait_clock();
 
-//int do_io(unsigned int command, unsigned int *register);
+int do_io(unsigned int command, unsigned int *reg, unsigned int rw);
 
 void set_tutor();
 
