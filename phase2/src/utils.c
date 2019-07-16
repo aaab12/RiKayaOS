@@ -87,3 +87,53 @@ void user_mode(pcb_t *process){
   }
   process->user_time_start = TOD_LO; /* Il processo entra in user mode al tempo TOD_LO */
 }
+
+/******************************************************************************/
+
+unsigned int termstat(memaddr *stataddr)
+{
+    return ((*stataddr) & STATUSMASK);
+}
+
+unsigned int termprint(char *str, unsigned int term)
+{
+    memaddr *statusp;
+    memaddr *commandp;
+    unsigned int stat;
+    unsigned int cmd;
+    unsigned int error = FALSE;
+    if (term < 8)
+    {
+        statusp = (unsigned int *)(0x10000250 + (term * 16) + (2 * 4));
+        commandp = (unsigned int *)(0x10000250 + (term * 16) + (3 * 4));
+        stat = termstat(statusp);
+        if ((stat == 1) || (stat == 5))
+        {
+            while ((*str != '\0') && (!error))
+            {
+                cmd = (*str << 8) | 2;
+                *commandp = cmd;
+                while ((stat = termstat(statusp)) == 3)
+                    ;
+                if (stat != 5)
+                {
+                    error = TRUE;
+                }
+                else
+                {
+                    str++;
+                }
+            }
+        }
+        else
+        {
+            error = TRUE;
+        }
+    }
+    else
+    {
+        error = TRUE;
+    }
+
+    return (!error);
+}
