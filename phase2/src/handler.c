@@ -51,7 +51,7 @@ void sysbk_handler(){
 					set_tutor();
 					break;
 				case SPECPASSUP:
-					//spec_passup((int) *arg1, (state_t) arg2, (state_t) arg3);
+					spec_passup((int) arg1, (state_t *) arg2, (state_t *) arg3);
 					break;
 				default:
 					PANIC(); /* SYSCALL non definita o non implementata */

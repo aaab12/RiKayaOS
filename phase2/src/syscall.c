@@ -137,6 +137,11 @@ void set_tutor(){
   current_process->tutor = TRUE;
 }
 
-//int spec_passup(int type, state_t *old, state_t *new){
+int spec_passup(int type, state_t *old, state_t *new){
+  if(current_process->passup[type]) return -1;
+  current_process->passup[type] = TRUE;
+  current_process->passup_oldarea[type] = old;
+  current_process->passup_newarea[type] = new;
 
-//}
+  return 0;
+}

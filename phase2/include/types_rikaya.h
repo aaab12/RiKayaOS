@@ -33,6 +33,11 @@ typedef struct pcb_t {
 	/* tutor boolean */
 	boolean tutor;
 
+	/* Trap management */
+	boolean passup[3];
+	state_t *passup_oldarea[3];
+	state_t *passup_newarea[3];
+
 	/* key of the semaphore on which the process is eventually blocked */
 	int *p_semkey;
 } pcb_t;

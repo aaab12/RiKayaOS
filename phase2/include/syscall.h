@@ -21,6 +21,6 @@ int do_io(unsigned int command, unsigned int *reg, unsigned int rw);
 
 void set_tutor();
 
-//int spec_passup(int type, state_t *old, state_t *new);
+int spec_passup(int type, state_t *old, state_t *new);
 
 #endif
