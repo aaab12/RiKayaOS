@@ -15,6 +15,6 @@
 // CP_U|T|V_M|x|B|xxxxxx|INT_MASK|xx|KU__IE
 
 /* SCHEDULER */
-#define TIME_SLICE SCHED_TIME_SLICE*(*(memaddr *)TIME_SCALE) /* BUS_TIMESCALE*4000 clock_ticks = 4ms */
+#define TIME_SLICE SCHED_TIME_SLICE*(*(memaddr *)BUS_TIMESCALE) /* BUS_TIMESCALE*4000 clock_ticks = 4ms */
 
 #endif
