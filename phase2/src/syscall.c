@@ -126,7 +126,7 @@ int do_io(unsigned int command, unsigned int *reg, unsigned int rw){
   }
 
   if(!*semaphore)
-    *((unsigned int *)reg + 1 + 2 * rw) = command;
+    *((unsigned int *)reg + 1 + 2 * (1-rw)) = command;
   passeren(semaphore);
 
   return *((unsigned int *)reg);

@@ -17,8 +17,8 @@ void sysbk_handler(){
 	/* Parametri della SYSCALL */
 	U32* arg0 = &(caller_process->reg_a0); /* Numero della SYSCALL */
 	U32 arg1 = caller_process->reg_a1;
-	U32* arg2 = &(caller_process->reg_a2);
-	U32* arg3	= &(caller_process->reg_a3);
+	U32 arg2 = caller_process->reg_a2;
+	U32 arg3 = caller_process->reg_a3;
 
 	U32* status = &(caller_process->status); /* Stato del processo al momento della chiamata (kernel/user mode) */
 	int  cause =   (caller_process->cause); /* Causa della SYSCALL (tipo di eccezione sollevato) */
