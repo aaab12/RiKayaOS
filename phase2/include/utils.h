@@ -4,8 +4,6 @@
 #include "handler.h"
 #include "pcb.h"
 
-extern unsigned int print(char *str);
-
 void initNewAreas();
 
 pcb_t* initPCB(void (*f), int n);
