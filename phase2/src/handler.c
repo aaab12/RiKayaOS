@@ -4,6 +4,8 @@ extern pcb_t* current_process;
 
 /* SYSCALL/Breakpoint handler */
 void sysbk_handler(){
+	kernel_mode(current_process); /* Il processo entra in kernel mode */
+
   /* Processo chiamante */
 	state_t* caller_process = (state_t *)SYSBK_OLDAREA;
   /* Il Program Counter del processo chiamante deve essere incrementato di una WORD_SIZE
@@ -12,11 +14,9 @@ void sysbk_handler(){
    */
 	caller_process->pc_epc += WORD_SIZE;
 
-	kernel_mode(current_process); /* Il processo entra in kernel mode */
-
 	/* Parametri della SYSCALL */
 	U32* arg0 = &(caller_process->reg_a0); /* Numero della SYSCALL */
-	U32* arg1 = &(caller_process->reg_a1);
+	U32 arg1 = caller_process->reg_a1;
 	U32* arg2 = &(caller_process->reg_a2);
 	U32* arg3	= &(caller_process->reg_a3);
 
@@ -68,11 +68,12 @@ void sysbk_handler(){
 		terminate_process(0);
 		scheduler();
 	}
+	user_mode(current_process); /* Il processo torna in user mode */
+	LDST(caller_process); /* Ritorniamo al flusso di esecuzione */
 }
 
 /* Program Traps handler */
 void pgmtrap_handler(){
-	print("TRAP\n");
 	terminate_process(0);
 	PANIC();
 }
