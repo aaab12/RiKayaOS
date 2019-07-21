@@ -5,8 +5,6 @@ extern pcb_t* current_process;
 extern int process_counter;
 extern int clock_semaphore;
 extern int clock_semaphore_counter;
-extern int device_semaphore[DEV_PER_INT*(DEV_USED_INTS-1)];
-extern int terminal_semaphore[DEV_PER_INT][2];
 
 /* SYS1: ritorna il tempo passato in user mode, kernel mode e tempo totale trascorso dalla prima attivazione */
 void get_cpu_time(unsigned int *user, unsigned int *kernel, unsigned int *wallclock){
@@ -111,25 +109,9 @@ void wait_clock(){
 }
 
 int do_io(unsigned int command, unsigned int *reg, unsigned int rw){
-  int first_device = DEV_REG_ADDR(INT_DISK, 0); /* Indirizzo del primo device */
-  int first_terminal = DEV_REG_ADDR(INT_TERMINAL, 0); /* Indirizzo del primo terminale */
-  int *semaphore; /* Semaforo su cui deve bloccarsi il processo */
-  int nth_device; /* N-esimo device passato come parametro, quello di cui selezionare il semaforo */
+  *((unsigned int *)reg + 1 + 2 * (1-rw)) = command;
 
-  /* Selezione del semaforo */
-  if((unsigned int)reg < first_terminal){ /* Il device non è un terminale */
-    nth_device = ((unsigned int)reg - first_device) / DEV_REG_SIZE; /* Calcolo quale dei 32 semafori dei device selezionare */
-    semaphore = &device_semaphore[nth_device];
-  } else { /* Il device è un terminale */
-    nth_device = ((unsigned int)reg - first_terminal) / DEV_REG_SIZE; /* Calcolo quale degli 8 semafori dei terminali selezionare */
-    semaphore = &terminal_semaphore[nth_device][rw];
-  }
-
-  if(!*semaphore)
-    *((unsigned int *)reg + 1 + 2 * (1-rw)) = command;
-  passeren(semaphore);
-
-  return *((unsigned int *)reg);
+  return 0;
 }
 
 /* SYS8: imposta il processo corrente come tutor */
