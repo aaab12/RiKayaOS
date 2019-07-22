@@ -1,4 +1,3 @@
-#include "const.h"
 #include "utils.h"
 
 extern int process_counter;

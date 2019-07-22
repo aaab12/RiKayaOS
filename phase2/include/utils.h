@@ -1,6 +1,7 @@
 #ifndef _UTILS_H
 #define _UTILS_H
 
+#include "const.h"
 #include "handler.h"
 #include "pcb.h"
 
