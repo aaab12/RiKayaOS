@@ -2,6 +2,7 @@
 #define _SYSCALL_H
 
 #include <umps/arch.h>
+#include <umps/types.h>
 #include "main.h"
 #include "pcb.h"
 

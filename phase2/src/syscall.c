@@ -108,10 +108,42 @@ void wait_clock(){
   clock_semaphore_counter++;
 }
 
-int do_io(unsigned int command, unsigned int *reg, unsigned int rw){
-  *((unsigned int *)reg + 1 + 2 * (1-rw)) = command;
+// int do_io(unsigned int command, unsigned int *reg, unsigned int rw){
+//   /* rw = FALSE --> write
+//    * rw = TRUE  --> read
+//    *             (base) + 1 + 0 = RECV_COMMAND
+//    *             (base) + 1 + 2 = TRANSM_COMMAND
+//    */
+//   *((unsigned int *)reg + 1 + 2 * (1-rw)) = command;
+//
+//   /*                    (base) + 0 = RECV_STATUS
+//    *                    (base) + 2 = TRANSM_STATUS
+//    */
+//   return *((unsigned int *)reg + 2 * (1-rw));
+// }
 
-  return 0;
+int do_io(unsigned int command, unsigned int *reg, unsigned int rw){
+  int first_terminal = DEV_REG_ADDR(INT_TERMINAL, 0); /* Indirizzo del primo terminale */
+
+  if((unsigned int)reg < first_terminal){ /* Il device non è un terminale */
+
+
+  } else { /* Il device è un terminale */
+    /* Imposta il carattere da trasmettere e fa partire l'operazione di stampa su terminale */
+    ((termreg_t *)reg)->transm_command = command;
+
+    /* Aspetta finchè lo stato del terminale non è "BUSY" */
+    while (((termreg_t *)reg)->transm_status == 3) termprint("busy\n", 1);
+
+    if (((termreg_t *)reg)->transm_status == 0) termprint("0\n", 1);
+    if (((termreg_t *)reg)->transm_status == 1) termprint("1\n", 1);
+    if (((termreg_t *)reg)->transm_status == 2) termprint("2\n", 1);
+    if (((termreg_t *)reg)->transm_status == 3) termprint("3\n", 1);
+    if (((termreg_t *)reg)->transm_status == 4) termprint("4\n", 1);
+    if (((termreg_t *)reg)->transm_status == 5) termprint("5\n", 1);
+
+    return ((termreg_t *)reg)->transm_status;
+  }
 }
 
 /* SYS8: imposta il processo corrente come tutor */
