@@ -23,6 +23,8 @@ void sysbk_handler(){
 	U32* status = &(caller_process->status); /* Stato del processo al momento della chiamata (kernel/user mode) */
 	int  cause =   (caller_process->cause); /* Causa della SYSCALL (tipo di eccezione sollevato) */
 
+	U32 ret = 0; /* Valore di ritorno delle syscall non VOID */
+
 	if (CAUSE_EXCCODE_GET(cause) == 8){ /* SYSCALL */
 		if ((*status & STATUS_KUp) == 0 ){ /* kernel mode */
 			switch (*arg0){
@@ -45,7 +47,7 @@ void sysbk_handler(){
 					wait_clock();
 					break;
 				case WAITIO:
-					do_io((unsigned int) arg1, (unsigned int *) arg2, (unsigned int) arg3);
+					ret = do_io((unsigned int) arg1, (unsigned int *) arg2, (unsigned int) arg3);
 					break;
 				case SETTUTOR:
 					set_tutor();
@@ -68,6 +70,9 @@ void sysbk_handler(){
 		terminate_process(0);
 		scheduler();
 	}
+
+	caller_process->reg_v0 = ret;
+
 	user_mode(current_process); /* Il processo torna in user mode */
 	LDST(caller_process); /* Ritorniamo al flusso di esecuzione */
 }
