@@ -108,20 +108,6 @@ void wait_clock(){
   clock_semaphore_counter++;
 }
 
-// int do_io(unsigned int command, unsigned int *reg, unsigned int rw){
-//   /* rw = FALSE --> write
-//    * rw = TRUE  --> read
-//    *             (base) + 1 + 0 = RECV_COMMAND
-//    *             (base) + 1 + 2 = TRANSM_COMMAND
-//    */
-//   *((unsigned int *)reg + 1 + 2 * (1-rw)) = command;
-//
-//   /*                    (base) + 0 = RECV_STATUS
-//    *                    (base) + 2 = TRANSM_STATUS
-//    */
-//   return *((unsigned int *)reg + 2 * (1-rw));
-// }
-
 int do_io(unsigned int command, unsigned int *reg, unsigned int rw){
   int first_terminal = DEV_REG_ADDR(INT_TERMINAL, 0); /* Indirizzo del primo terminale */
 
@@ -129,13 +115,11 @@ int do_io(unsigned int command, unsigned int *reg, unsigned int rw){
 
 
   } else { /* Il device è un terminale */
-    /* Imposta il carattere da trasmettere e fa partire l'operazione di stampa su terminale */
-    ((termreg_t *)reg)->transm_command = command;
+    ((termreg_t *)reg)->transm_command = command; /* Imposta il carattere da trasmettere e fa partire l'operazione di stampa su terminale */
 
-    /* Aspetta finchè lo stato del terminale non è più "BUSY" */
-    while (((termreg_t *)reg)->transm_status == 3) termprint("busy\n", 1);
+    while (((termreg_t *)reg)->transm_status == 3) termprint("busy\n", 1); /* Aspetta finchè lo stato del terminale non è più "BUSY" */
 
-    return *(reg + 2);
+    return *(reg + 2); /* (base) + 2 = TRANSM_STATUS */
   }
 }
 
