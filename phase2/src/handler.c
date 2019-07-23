@@ -23,7 +23,7 @@ void sysbk_handler(){
 	U32* status = &(caller_process->status); /* Stato del processo al momento della chiamata (kernel/user mode) */
 	int  cause =   (caller_process->cause); /* Causa della SYSCALL (tipo di eccezione sollevato) */
 
-	U32 ret = 0; /* Valore di ritorno delle syscall non VOID */
+	U32 return_value = 0; /* Valore di ritorno delle syscall non VOID */
 
 	if (CAUSE_EXCCODE_GET(cause) == 8){ /* SYSCALL */
 		if ((*status & STATUS_KUp) == 0 ){ /* kernel mode */
@@ -32,10 +32,10 @@ void sysbk_handler(){
 					get_cpu_time((unsigned int *) arg1, (unsigned int *) arg2, (unsigned int *) arg3);
 					break;
 				case CREATEPROCESS:
-					create_process((state_t *) arg1, (int) arg2, (void **) arg3);
+					return_value = create_process((state_t *) arg1, (int) arg2, (void **) arg3);
 					break;
 				case TERMINATEPROCESS:
-					terminate_process((void **) arg1);
+					return_value = terminate_process((void **) arg1);
 					break;
 				case VERHOGEN:
 					verhogen((int *) arg1);
@@ -47,7 +47,7 @@ void sysbk_handler(){
 					wait_clock();
 					break;
 				case WAITIO:
-					ret = do_io((unsigned int) arg1, (unsigned int *) arg2, (unsigned int) arg3);
+					return_value = do_io((unsigned int) arg1, (unsigned int *) arg2, (unsigned int) arg3);
 					break;
 				case SETTUTOR:
 					set_tutor();
@@ -71,10 +71,10 @@ void sysbk_handler(){
 		scheduler();
 	}
 
-	caller_process->reg_v0 = ret; /* Il registro v0 contiene il valore di ritorno */
+	caller_process->reg_v0 = return_value; /* Il registro v0 contiene il valore di ritorno */
 
- /* TODO: current process = NULL dopo la P sul processo 3 */
-	if(current_process) user_mode(current_process); /* Il processo torna in user mode */
+	if(current_process) /* La PASSEREN aggiorna il tempo passato in Kernel Mode e poi richiama lo scheduler che setta current_process = NULL */
+		user_mode(current_process); /* Il processo torna in user mode */
 
 	LDST(caller_process); /* Ritorniamo al flusso di esecuzione */
 }
