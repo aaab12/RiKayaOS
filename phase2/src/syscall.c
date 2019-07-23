@@ -104,8 +104,8 @@ void passeren(int *semaddr){
 
 /* SYS6: sospende il processo per 100ms */
 void wait_clock(){
-  passeren(&clock_semaphore); /* P sul semaforo del clock */
   clock_semaphore_counter++;
+  passeren(&clock_semaphore); /* P sul semaforo del clock */
 }
 
 int do_io(unsigned int command, unsigned int *reg, unsigned int rw){
