@@ -132,17 +132,10 @@ int do_io(unsigned int command, unsigned int *reg, unsigned int rw){
     /* Imposta il carattere da trasmettere e fa partire l'operazione di stampa su terminale */
     ((termreg_t *)reg)->transm_command = command;
 
-    /* Aspetta finchè lo stato del terminale non è "BUSY" */
+    /* Aspetta finchè lo stato del terminale non è più "BUSY" */
     while (((termreg_t *)reg)->transm_status == 3) termprint("busy\n", 1);
 
-    if (((termreg_t *)reg)->transm_status == 0) termprint("0\n", 1);
-    if (((termreg_t *)reg)->transm_status == 1) termprint("1\n", 1);
-    if (((termreg_t *)reg)->transm_status == 2) termprint("2\n", 1);
-    if (((termreg_t *)reg)->transm_status == 3) termprint("3\n", 1);
-    if (((termreg_t *)reg)->transm_status == 4) termprint("4\n", 1);
-    if (((termreg_t *)reg)->transm_status == 5) termprint("5\n", 1);
-
-    return ((termreg_t *)reg)->transm_status;
+    return *(reg + 2);
   }
 }
 
