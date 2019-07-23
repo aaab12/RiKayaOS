@@ -71,7 +71,7 @@ void sysbk_handler(){
 		scheduler();
 	}
 
-	caller_process->reg_v0 = ret;
+	caller_process->reg_v0 = ret; /* Il registro v0 contiene il valore di ritorno */
 
 	user_mode(current_process); /* Il processo torna in user mode */
 	LDST(caller_process); /* Ritorniamo al flusso di esecuzione */
