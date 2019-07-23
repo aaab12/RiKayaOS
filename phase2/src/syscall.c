@@ -117,7 +117,7 @@ int do_io(unsigned int command, unsigned int *reg, unsigned int rw){
   } else { /* Il device è un terminale */
     ((termreg_t *)reg)->transm_command = command; /* Imposta il carattere da trasmettere e fa partire l'operazione di stampa su terminale */
 
-    while (((termreg_t *)reg)->transm_status == 3) termprint("busy\n", 1); /* Aspetta finchè lo stato del terminale non è più "BUSY" */
+    while (((termreg_t *)reg)->transm_status == 3); /* Aspetta finchè lo stato del terminale non è più "BUSY" */
 
     return *(reg + 2); /* (base) + 2 = TRANSM_STATUS */
   }
