@@ -9,6 +9,10 @@
 #include "types_rikaya.h"
 #include "utils.h"
 
+#define TERM_ST_BUSY         3
+#define TERM_ST_TRANSMITTED  5
+#define TERM_STATUS_MASK     0xFF
+
 void plt_handler();
 
 void it_handler();

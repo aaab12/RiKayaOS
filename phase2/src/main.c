@@ -5,6 +5,7 @@ pcb_t* current_process; /* Puntatore al processo attualmente in esecuzione */
 int process_counter;	/* Contatore dei processi */
 int clock_semaphore; /* Semaforo del clock (SYS6) */
 int clock_semaphore_counter; /* Contatore dei processi bloccati sul semaforo del clock */
+int terminal_semaphore[DEV_PER_INT][2]; /* Semafori dei terminali: numero di device (8) * 2 (read e write) */
 
 int main() {
   initNewAreas(); /* Iniziliazzazione delle new area */

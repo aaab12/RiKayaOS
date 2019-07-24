@@ -19,6 +19,10 @@ void kernel_mode(pcb_t *process);
 
 void user_mode(pcb_t *process);
 
+int device_number(memaddr* bitmap);
+
+pcb_t* V_pcb(int *semaddr);
+
 /******************************************************************************/
 
 unsigned int termstat(memaddr *stataddr);
