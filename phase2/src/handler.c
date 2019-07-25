@@ -90,15 +90,20 @@ void pgmtrap_handler(){
 	if (!current_process->passup[TRAP_TYPE])
 		terminate_process(0);
 
-	save_state(caller_process, (current_process->passup_oldarea[TRAP_TYPE])); /* Ripristino lo stato originario del processo */
+	save_state(caller_process, (current_process->passup_oldarea[TRAP_TYPE]));
 	LDST(current_process->passup_newarea[TRAP_TYPE]);
 }
 
 /* TLB Management handler */
 void tlb_handler(){
-	termprint("TLB Exception\n", 1);
-	terminate_process(0);
-	PANIC();
+	state_t* caller_process = (state_t *)TLB_OLDAREA;
+	caller_process->pc_epc += WORD_SIZE;
+
+	if (!current_process->passup[TLB_TYPE])
+		terminate_process(0);
+
+	save_state(caller_process, (current_process->passup_oldarea[TLB_TYPE]));
+	LDST(current_process->passup_newarea[TLB_TYPE]);
 }
 
 /* Interrupts handler */
