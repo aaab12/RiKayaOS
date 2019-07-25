@@ -84,9 +84,14 @@ void sysbk_handler(){
 
 /* Program Traps handler */
 void pgmtrap_handler(){
-	termprint("Program Trap\n", 1);
-	terminate_process(0);
-	PANIC();
+	state_t* caller_process = (state_t *)PGMTRAP_OLDAREA;
+	caller_process->pc_epc += WORD_SIZE;
+
+	if (!current_process->passup[TRAP_TYPE])
+		terminate_process(0);
+
+	save_state(caller_process, (current_process->passup_oldarea[TRAP_TYPE])); /* Ripristino lo stato originario del processo */
+	LDST(current_process->passup_newarea[TRAP_TYPE]);
 }
 
 /* TLB Management handler */
