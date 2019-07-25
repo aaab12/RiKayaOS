@@ -17,4 +17,7 @@
 /* SCHEDULER */
 #define TIME_SLICE SCHED_TIME_SLICE*(*(memaddr *)BUS_TIMESCALE) /* BUS_TIMESCALE*4000 clock_ticks = 4ms */
 
+/* SYSTEM CLOCK TICK */
+#define SYSTEM_CLOCK 100000*(*(memaddr *)BUS_TIMESCALE) /* BUS_TIMESCALE*100000 clock_ticks = 100ms */
+
 #endif

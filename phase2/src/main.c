@@ -26,6 +26,8 @@ int main() {
 
   insertProcQ(&ready_queue, pcb); /* Inserimento di pcb nella coda dei processi in stato ready */
 
+  setIT(SYSTEM_CLOCK); /* System Clock Timer */
+
   scheduler(); /* Passaggio del controllo allo scheduler */
   return 0;
 }
