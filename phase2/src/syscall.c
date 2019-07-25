@@ -26,7 +26,7 @@ int create_process(state_t *statep, int priority, void ** cpid){
   new_process->priority = priority;
   new_process->original_priority = priority;
 
-  save_state(statep, &(new_process->p_s)); /* Lo stato del figlio è uguale allo stato del padre */
+  save_state(statep, &(new_process->p_s)); /* Imposta lo stato del processo */
 
   new_process->wallclock_time_start = TOD_LO; /* Il processo nasce al tempo TOD_LO */
 
