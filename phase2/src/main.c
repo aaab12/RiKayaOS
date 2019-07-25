@@ -5,6 +5,7 @@ pcb_t* current_process; /* Puntatore al processo attualmente in esecuzione */
 int process_counter;	/* Contatore dei processi */
 int clock_semaphore; /* Semaforo del clock (SYS6) */
 int clock_semaphore_counter; /* Contatore dei processi bloccati sul semaforo del clock */
+int device_semaphore[DEV_PER_INT*(DEV_USED_INTS-1)]; /* Semafori dei device: numero di device per interrupt line * numero di interrupt line dedicate ai device (meno una perchè l'ultima interrupt line è per i terminali) */
 int terminal_semaphore[DEV_PER_INT][2]; /* Semafori dei terminali: numero di device (8) * 2 (read e write) */
 
 int main() {
