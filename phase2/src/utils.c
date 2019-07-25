@@ -71,20 +71,24 @@ void setIT(unsigned int val){
 
 /* Funzione per calcolare il tempo passato in user mode prima di passare a kernel mode */
 void kernel_mode(pcb_t *process){
-  if(process->user_time_start){ /* Se il processo era in user mode */
-    process->user_time_total += (TOD_LO - process->user_time_start); /* Tempo totale in cui è rimasto in esecuzione in user mode */
-    process->user_time_start = 0; /* Il processo esce dalla user mode */
+  if(process){
+    if(process->user_time_start){ /* Se il processo era in user mode */
+      process->user_time_total += (TOD_LO - process->user_time_start); /* Tempo totale in cui è rimasto in esecuzione in user mode */
+      process->user_time_start = 0; /* Il processo esce dalla user mode */
+    }
+    process->kernel_time_start = TOD_LO; /* Il processo entra in kernel mode al tempo TOD_LO */
   }
-  process->kernel_time_start = TOD_LO; /* Il processo entra in kernel mode al tempo TOD_LO */
 }
 
 /* Funzione per calcolare il tempo passato in kernel mode prima di passare a user mode */
 void user_mode(pcb_t *process){
-  if(process->kernel_time_start){ /* Se il processo era in kernel mode */
-    process->kernel_time_total += (TOD_LO - process->kernel_time_start); /* Tempo totale in cui è rimasto in esecuzione in kernel mode */
-    process->kernel_time_start = 0; /* Il processo esce dalla kernel mode */
+  if(process){
+    if(process->kernel_time_start){ /* Se il processo era in kernel mode */
+      process->kernel_time_total += (TOD_LO - process->kernel_time_start); /* Tempo totale in cui è rimasto in esecuzione in kernel mode */
+      process->kernel_time_start = 0; /* Il processo esce dalla kernel mode */
+    }
+    process->user_time_start = TOD_LO; /* Il processo entra in user mode al tempo TOD_LO */
   }
-  process->user_time_start = TOD_LO; /* Il processo entra in user mode al tempo TOD_LO */
 }
 
 int device_number(memaddr* bitmap) {

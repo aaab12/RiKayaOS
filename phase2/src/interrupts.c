@@ -9,24 +9,28 @@ extern int terminal_semaphore[DEV_PER_INT][2];
 
 /* Process Local Timer handler */
 void plt_handler() {
-	state_t* caller_process = (state_t *)INT_OLDAREA;
-	save_state(caller_process, &(current_process->p_s));
-	user_mode(current_process); /* Il processo torna in user mode */
-	insertProcQ(&ready_queue, current_process); /* Reinserimento del processo interrotto in stato ready */
+	if(current_process){
+		state_t* caller_process = (state_t *)INT_OLDAREA;
+		save_state(caller_process, &(current_process->p_s));
+		user_mode(current_process); /* Il processo torna in user mode */
+		insertProcQ(&ready_queue, current_process); /* Reinserimento del processo interrotto in stato ready */
+	}
 	setTIMER(TIME_SLICE); /* ACK */
 	scheduler();
 }
 
 /* Interval Timer handler */
 void it_handler(){
-	state_t* caller_process = (state_t *)INT_OLDAREA;
-	save_state(caller_process, &(current_process->p_s));
-	user_mode(current_process); /* Il processo torna in user mode */
+	if(current_process){
+		state_t* caller_process = (state_t *)INT_OLDAREA;
+		save_state(caller_process, &(current_process->p_s));
+		user_mode(current_process); /* Il processo torna in user mode */
+		insertProcQ(&ready_queue, current_process); /* Reinserimento del processo interrotto in stato ready */
+	}
 	while(clock_semaphore_counter){ /* Sblocca tutti i processi bloccati sul semaforo del clock */
 		clock_semaphore_counter--;
 		verhogen(&clock_semaphore); /* V sul semaforo del clock */
 	}
-	insertProcQ(&ready_queue, current_process); /* Reinserimento del processo interrotto in stato ready */
 	setIT(SYSTEM_CLOCK); /* ACK */
 	scheduler();
 }
