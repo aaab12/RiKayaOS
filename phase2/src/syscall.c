@@ -68,7 +68,6 @@ int terminate_process(void ** pid){
   freePcb(pcb); /* Libero il PCB */
 
   if(pcb == current_process){ /* Se termina il processo attuale, il controllo passa allo scheduler */
-    current_process = NULL;
     scheduler();
   }
 
