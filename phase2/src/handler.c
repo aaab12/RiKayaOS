@@ -55,6 +55,9 @@ void sysbk_handler(){
 				case SPECPASSUP:
 					spec_passup((int) arg1, (state_t *) arg2, (state_t *) arg3);
 					break;
+				case GETPID:
+					spec_passup((int) arg1, (state_t *) arg2, (state_t *) arg3);
+					break;
 				default:
 					PANIC(); /* SYSCALL non definita o non implementata */
 			}

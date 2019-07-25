@@ -24,4 +24,6 @@ void set_tutor();
 
 int spec_passup(int type, state_t *old, state_t *new);
 
+void get_pid_ppid(void **pid, void **ppid);
+
 #endif

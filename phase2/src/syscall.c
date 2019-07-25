@@ -135,3 +135,9 @@ int spec_passup(int type, state_t *old, state_t *new){
 
   return 0;
 }
+
+/* SYS10: PID del processo corrente e del processo genitore */
+ void get_pid_ppid(void **pid, void **ppid) {
+   if (pid) *pid = current_process;
+   if (ppid) *ppid = current_process->p_parent;
+}
