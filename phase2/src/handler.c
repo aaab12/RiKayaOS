@@ -59,7 +59,11 @@ void sysbk_handler(){
 					spec_passup((int) arg1, (state_t *) arg2, (state_t *) arg3);
 					break;
 				default:
-					PANIC(); /* SYSCALL non definita o non implementata */
+					if (!current_process->passup[SYSCALL_TYPE])
+						terminate_process(0);
+					save_state(caller_process, (current_process->passup_oldarea[SYSCALL_TYPE]));
+					LDST(current_process->passup_newarea[SYSCALL_TYPE]);
+					break;
 			}
 		} else { /* user mode */
 			/* Syscall invocata in user mode, quindi lancio TRAP */
