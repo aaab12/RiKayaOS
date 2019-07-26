@@ -53,7 +53,7 @@ void sysbk_handler(){
 					set_tutor();
 					break;
 				case SPECPASSUP:
-					spec_passup((int) arg1, (state_t *) arg2, (state_t *) arg3);
+					return_value = spec_passup((int) arg1, (state_t *) arg2, (state_t *) arg3);
 					break;
 				case GETPID:
 					spec_passup((int) arg1, (state_t *) arg2, (state_t *) arg3);
@@ -70,12 +70,11 @@ void sysbk_handler(){
 			pgmtrap_handler();
 		}
 	} else if (CAUSE_EXCCODE_GET(cause) == 9){ /* BREAKPOINT */
-		/*
-		 * Terminare il processo e la sua progenie
-		 * Passare il controllo allo scheduler
-		 */
-		terminate_process(0);
-		scheduler();
+			if (!current_process->passup[SYSCALL_TYPE])
+				terminate_process(0);
+
+			save_state(caller_process, (current_process->passup_oldarea[SYSCALL_TYPE]));
+			LDST(current_process->passup_newarea[SYSCALL_TYPE]);
 	}
 
 	caller_process->reg_v0 = return_value; /* Il registro v0 contiene il valore di ritorno */
