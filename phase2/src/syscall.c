@@ -41,6 +41,7 @@ int terminate_process(void ** pid){
   pcb_t *pcb;
   pcb_t *parent = NULL;
   pcb_t *tutor = NULL;
+  pcb_t *son = NULL;
 
   if(pid) pcb = *((pcb_t **)pid);
   else pcb = current_process;
@@ -55,14 +56,19 @@ int terminate_process(void ** pid){
   }
 
   tutor = pcb;
-  while(!(tutor = tutor->p_parent)->tutor); /* Trova il primo antenato tutor */
+  while(!tutor->tutor)
+    tutor = tutor->p_parent; /* Trova il primo antenato tutor */
 
   if(pcb->p_semkey){ /* Se il processo è bloccato su un semaforo, rilascio la risorsa */
     *pcb->p_semkey += 1;
     outChild(pcb); /* Rimuove il processo dalla lista dei figli di suo padre */
   }
 
-  while(!emptyChild(pcb)) insertChild(tutor, removeChild(pcb)); /* Se il processo da terminare ha figli, diventano figli del tutor */
+  while(!emptyChild(pcb)){
+    son = removeChild(pcb);
+    insertChild(tutor, son); /* Se il processo da terminare ha figli, diventano figli del tutor */
+  }
+
   outBlocked(pcb); /* Rimuove il processo dal semaforo su cui è eventualmente bloccato */
   outProcQ(&ready_queue, pcb); /* Rimuove il processo dalla ready_queue */
   freePcb(pcb); /* Libero il PCB */
