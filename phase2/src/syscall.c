@@ -51,7 +51,7 @@ int terminate_process(void ** pid){
     parent = pcb;
     while((parent = parent->p_parent))
       if(current_process == parent) break;
-    return -1; /* Se non è discendente del processo corrente, errore */
+    if(!parent) return -1; /* Se non è discendente del processo corrente, errore */
   }
 
   tutor = pcb;
