@@ -59,10 +59,10 @@ int terminate_process(void ** pid){
 
   if(pcb->p_semkey){ /* Se il processo è bloccato su un semaforo, rilascio la risorsa */
     *pcb->p_semkey += 1;
+    outChild(pcb); /* Rimuove il processo dalla lista dei figli di suo padre */
   }
 
   while(!emptyChild(pcb)) insertChild(tutor, removeChild(pcb)); /* Se il processo da terminare ha figli, diventano figli del tutor */
-  outChild(pcb); /* Rimuove il processo dalla lista dei figli di suo padre */
   outBlocked(pcb); /* Rimuove il processo dal semaforo su cui è eventualmente bloccato */
   outProcQ(&ready_queue, pcb); /* Rimuove il processo dalla ready_queue */
   freePcb(pcb); /* Libero il PCB */
