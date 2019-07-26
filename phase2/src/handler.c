@@ -56,7 +56,7 @@ void sysbk_handler(){
 					return_value = spec_passup((int) arg1, (state_t *) arg2, (state_t *) arg3);
 					break;
 				case GETPID:
-					spec_passup((int) arg1, (state_t *) arg2, (state_t *) arg3);
+					get_pid_ppid((void **) arg1, (void **) arg2);
 					break;
 				default:
 					if (!current_process->passup[SYSCALL_TYPE])
