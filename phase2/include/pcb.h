@@ -3,6 +3,7 @@
 
 #include "const_rikaya.h"
 #include "types_rikaya.h"
+#include "listx.h"
 
 //USER
 void inizializzapcb(struct pcb_t* p);
