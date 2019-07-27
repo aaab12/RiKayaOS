@@ -19,12 +19,4 @@ void kernel_mode(pcb_t *process);
 
 void user_mode(pcb_t *process);
 
-int device_number(memaddr* bitmap);
-
-/******************************************************************************/
-
-unsigned int termstat(memaddr *stataddr);
-
-unsigned int termprint(char *str, unsigned int term);
-
 #endif
