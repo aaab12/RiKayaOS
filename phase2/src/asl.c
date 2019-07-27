@@ -76,6 +76,7 @@ pcb_t* removeBlocked(int *key){
     }
     // ho trovato il semaforo con la key (ptr)
     pcb_t *p = removeProcQ(&ptr->s_procQ);				// PCB rimosso
+    if(p) p->p_semkey = NULL; /* Aggiorno il semaforo su cui l'eventuale processo era bloccato */
     // controllo se il semaforo è rimasto senza processi bloccati in coda, in questo caso lo metto nella lista dei semafori liberi
     if(emptyProcQ(&ptr->s_procQ)) {
       // il semaforo è rimasto vuoto: lo rimuovo dalla ASL e lo inserisco in coda alla lista dei semdFree
