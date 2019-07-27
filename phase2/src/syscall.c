@@ -120,8 +120,14 @@ int do_io(unsigned int command, unsigned int *reg, unsigned int rw){
   int first_terminal = DEV_REG_ADDR(INT_TERMINAL, 0); /* Indirizzo del primo terminale */
 
   if((unsigned int)reg < first_terminal){ /* Il device non è un terminale */
+    if (((dtpreg_t *)reg)->status != DEV_S_READY) return -1; /* Se lo stato del device non è "READY" ritorna */
 
+    ((dtpreg_t *)reg)->data0 = (command >> 8);
+    ((dtpreg_t *)reg)->command = (uint8_t) command;
 
+    while (((dtpreg_t *)reg)->status == 3); /* Aspetta finchè lo stato del device non è più "BUSY" */
+
+    return *(reg);
   } else { /* Il device è un terminale */
     ((termreg_t *)reg)->transm_command = command; /* Imposta il carattere da trasmettere e fa partire l'operazione di stampa su terminale */
 
