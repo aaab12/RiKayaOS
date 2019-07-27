@@ -55,13 +55,14 @@ int terminate_process(void ** pid){
     if(!parent) return -1; /* Se non è discendente del processo corrente, errore */
   }
 
-  tutor = pcb;
+  if(pcb->tutor) tutor = pcb->p_parent; /* Se il processo da terminare è tutor, iniziamo la scansione dal padre */
+  else tutor = pcb;
+
   while(!tutor->tutor)
     tutor = tutor->p_parent; /* Trova il primo antenato tutor */
 
   if(pcb->p_semkey){ /* Se il processo è bloccato su un semaforo, rilascio la risorsa */
     *pcb->p_semkey += 1;
-    outChild(pcb); /* Rimuove il processo dalla lista dei figli di suo padre */
   }
 
   while(!emptyChild(pcb)){
@@ -69,11 +70,13 @@ int terminate_process(void ** pid){
     insertChild(tutor, son); /* Se il processo da terminare ha figli, diventano figli del tutor */
   }
 
+  outChild(pcb); /* Rimuove il processo dalla lista dei figli di suo padre */
   outBlocked(pcb); /* Rimuove il processo dal semaforo su cui è eventualmente bloccato */
   outProcQ(&ready_queue, pcb); /* Rimuove il processo dalla ready_queue */
   freePcb(pcb); /* Libero il PCB */
 
   if(pcb == current_process){ /* Se termina il processo attuale, il controllo passa allo scheduler */
+    current_process = NULL;
     scheduler();
   }
 
