@@ -36,30 +36,78 @@ void it_handler(){
 }
 
 void disk_handler(){
-	int deviceno_pending = device_number((memaddr*)INTR_CURRENT_BITMAP(INT_DISK));
-  dtpreg_t* device_addr = (dtpreg_t*)DEV_ADDRESS(INT_DISK, deviceno_pending);
-  device_addr->command = DEV_C_ACK;
+	for (int device = 0; device < 8; device++){
+		int pending = PENDING_BITMAP_START + (WORD_SIZE * (INT_DISK - 3));
+		if (pending){
+			unsigned int device_addr = DEV_REG_ADDR(INT_DISK, device);
+			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
+		}
+	}
+
+	if(current_process){
+		state_t* caller_process = (state_t *)INT_OLDAREA;
+		save_state(caller_process, &(current_process->p_s));
+		user_mode(current_process); /* Il processo torna in user mode */
+		insertProcQ(&ready_queue, current_process); /* Reinserimento del processo interrotto in stato ready */
+	}
+
   scheduler();
 }
 
 void tape_handler(){
-	int deviceno_pending = device_number((memaddr*)INTR_CURRENT_BITMAP(INT_TAPE));
-  dtpreg_t* device_addr = (dtpreg_t*)DEV_ADDRESS(INT_TAPE, deviceno_pending);
-  device_addr->command = DEV_C_ACK;
+	for (int device = 0; device < 8; device++){
+		int pending = PENDING_BITMAP_START + (WORD_SIZE * (INT_TAPE - 3));
+		if (pending){
+			unsigned int device_addr = DEV_REG_ADDR(INT_TAPE, device);
+			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
+		}
+	}
+
+	if(current_process){
+		state_t* caller_process = (state_t *)INT_OLDAREA;
+		save_state(caller_process, &(current_process->p_s));
+		user_mode(current_process); /* Il processo torna in user mode */
+		insertProcQ(&ready_queue, current_process); /* Reinserimento del processo interrotto in stato ready */
+	}
+
   scheduler();
 }
 
 void network_handler(){
-	int deviceno_pending = device_number((memaddr*)INTR_CURRENT_BITMAP(INT_NETWORK));
-  dtpreg_t* device_addr = (dtpreg_t*)DEV_ADDRESS(INT_NETWORK, deviceno_pending);
-  device_addr->command = DEV_C_ACK;
+	for (int device = 0; device < 8; device++){
+		int pending = PENDING_BITMAP_START + (WORD_SIZE * (INT_NETWORK - 3));
+		if (pending){
+			unsigned int device_addr = DEV_REG_ADDR(INT_NETWORK, device);
+			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
+		}
+	}
+
+	if(current_process){
+		state_t* caller_process = (state_t *)INT_OLDAREA;
+		save_state(caller_process, &(current_process->p_s));
+		user_mode(current_process); /* Il processo torna in user mode */
+		insertProcQ(&ready_queue, current_process); /* Reinserimento del processo interrotto in stato ready */
+	}
+
   scheduler();
 }
 
 void printer_handler(){
-	int deviceno_pending = device_number((memaddr*)INTR_CURRENT_BITMAP(INT_PRINTER));
-  dtpreg_t* device_addr = (dtpreg_t*)DEV_ADDRESS(INT_PRINTER, deviceno_pending);
-  device_addr->command = DEV_C_ACK;
+	for (int device = 0; device < 8; device++){
+		int pending = PENDING_BITMAP_START + (WORD_SIZE * (INT_PRINTER - 3));
+		if (pending){
+			unsigned int device_addr = DEV_REG_ADDR(INT_PRINTER, device);
+			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
+		}
+	}
+
+	if(current_process){
+		state_t* caller_process = (state_t *)INT_OLDAREA;
+		save_state(caller_process, &(current_process->p_s));
+		user_mode(current_process); /* Il processo torna in user mode */
+		insertProcQ(&ready_queue, current_process); /* Reinserimento del processo interrotto in stato ready */
+	}
+
   scheduler();
 }
 
