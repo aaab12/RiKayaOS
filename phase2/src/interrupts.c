@@ -112,16 +112,21 @@ void printer_handler(){
 }
 
 void terminal_handler(){
-	int deviceno_pending = device_number((memaddr*)INTR_CURRENT_BITMAP(INT_TERMINAL));
-	termreg_t* device_addr = (termreg_t*)DEV_REG_ADDR(INT_TERMINAL, deviceno_pending);
-	if((device_addr->recv_status != TERM_ST_BUSY) && (device_addr->recv_status !=  DEV_S_READY)){
-		device_addr->recv_command = DEV_C_ACK;
-		while((device_addr->recv_status & TERM_STATUS_MASK) != DEV_S_READY);
-	}
+	for (int device = 0; device < 8; device++){
+		int pending = PENDING_BITMAP_START + (WORD_SIZE * (INT_TERMINAL - 3));
+		if (pending){
+			unsigned int device_addr = DEV_REG_ADDR(INT_TERMINAL, device);
 
-	if((device_addr->transm_status != TERM_ST_BUSY) && (device_addr->transm_status != DEV_S_READY)){
-		device_addr->transm_command = DEV_C_ACK;
-		while((device_addr->transm_status & TERM_STATUS_MASK) != DEV_S_READY);
+			if((((termreg_t *)device_addr)->recv_status != TERM_ST_BUSY) && (((termreg_t *)device_addr)->recv_status !=  DEV_S_READY)){
+				((termreg_t *)device_addr)->recv_command = DEV_C_ACK;
+				while((((termreg_t *)device_addr)->recv_status & TERM_STATUS_MASK) == TERM_ST_BUSY);
+			}
+
+			if((((termreg_t *)device_addr)->transm_status != TERM_ST_BUSY) && (((termreg_t *)device_addr)->transm_status != DEV_S_READY)){
+				((termreg_t *)device_addr)->transm_command = DEV_C_ACK;
+				while((((termreg_t *)device_addr)->transm_status & TERM_STATUS_MASK) == TERM_ST_BUSY);
+			}
+		}
 	}
 
 	if(current_process){
