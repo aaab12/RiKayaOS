@@ -100,20 +100,6 @@ int device_number(memaddr* bitmap) {
   return device_no;
 }
 
-pcb_t* V_pcb(int *semaddr){
-  pcb_t* pcb;
-
-  *semaddr += 1; /* Aumenta il valore del semaforo */
-
-  if(*semaddr <= 0){ /* Se il semaforo è negativo, significa che c'è almeno un processo in attesa su quel semaforo */
-    pcb = removeBlocked(semaddr); /* Recupero del primo processo bloccato sul semaforo */
-    if(pcb) /* Se la key del semaforo è presente */
-      pcb->priority = pcb->original_priority; /* Ripristino della priorità originale */
-    return pcb;
-  }
-  return NULL;
-}
-
 /******************************************************************************/
 
 unsigned int termstat(memaddr *stataddr)
