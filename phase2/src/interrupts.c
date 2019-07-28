@@ -47,13 +47,15 @@ void it_handler(){
 
 /* Disk handler */
 void disk_handler(){
+	pcb_t* pcb;
   for (int device = 0; device < 8; device++){ /* Cerco i device disk che hanno interrupt pending: per ogni sotto-device da 0 a 7... */
 		int pending = PENDING_BITMAP_START + (WORD_SIZE * (INT_DISK - 3)); /* ...mi interessano quelli con interrupt pending */
 		pending = *((uint32_t *)pending) << (1 << device);
 		if (pending){ /* ...per ognuno di questi faccio l'ack dopo averne trovato l'indirizzo */
 			unsigned int device_addr = DEV_REG_ADDR(INT_DISK, device);
 			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
-			verhogen(&device_semaphore[device]);
+			pcb = verhogen_2(&device_semaphore[device]);
+			if (pcb) pcb->p_s.reg_v0 = ((dtpreg_t *)device_addr)->status;
 		}
 	}
 
@@ -68,13 +70,15 @@ void disk_handler(){
 
 /*Tape handler */
 void tape_handler(){
+	pcb_t* pcb;
 	for (int device = 0; device < 8; device++){ /* Cerco i device tape che hanno interrupt pending: per ogni sotto-device da 0 a 7... */
 		int pending = PENDING_BITMAP_START + (WORD_SIZE * (INT_TAPE - 3)); /* ...mi interessano quelli con interrupt pending */
 		pending = *((uint32_t *)pending) << (1 << device);
 		if (pending){ /* ...per ognuno di questi faccio l'ack dopo averne trovato l'indirizzo */
 			unsigned int device_addr = DEV_REG_ADDR(INT_TAPE, device);
 			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
-			verhogen(&device_semaphore[DEV_PER_INT + device]);
+			pcb = verhogen_2(&device_semaphore[DEV_PER_INT + device]);
+			if (pcb) pcb->p_s.reg_v0 = ((dtpreg_t *)device_addr)->status;
 		}
 	}
 
@@ -89,13 +93,15 @@ void tape_handler(){
 
 /* Network handler */
 void network_handler(){
+	pcb_t* pcb;
 	for (int device = 0; device < 8; device++){ /* Cerco i device network che hanno interrupt pending: per ogni sotto-device da 0 a 7... */
 		int pending = PENDING_BITMAP_START + (WORD_SIZE * (INT_NETWORK - 3)); /* ...mi interessano quelli con interrupt pending */
 		pending = *((uint32_t *)pending) << (1 << device);
 		if (pending){ /* ...per ognuno di questi faccio l'ack dopo averne trovato l'indirizzo */
 			unsigned int device_addr = DEV_REG_ADDR(INT_NETWORK, device);
 			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
-			verhogen(&device_semaphore[2 * DEV_PER_INT + device]);
+			pcb = verhogen_2(&device_semaphore[2 * DEV_PER_INT + device]);
+			if (pcb) pcb->p_s.reg_v0 = ((dtpreg_t *)device_addr)->status;
 		}
 	}
 
@@ -140,24 +146,24 @@ void terminal_handler(){
 		if (pending){ /* ...per ognuno di questi faccio l'ack dopo averne trovato l'indirizzo */
 			unsigned int device_addr = DEV_REG_ADDR(INT_TERMINAL, device);
 
-			/* Caso recive */
+			/* Caso receive */
 			if((((termreg_t *)device_addr)->recv_status != TERM_ST_BUSY) && (((termreg_t *)device_addr)->recv_status !=  DEV_S_READY)){
 			  ((termreg_t *)device_addr)->recv_command = DEV_C_ACK; /* Faccio l'ack */
 			  while((((termreg_t *)device_addr)->recv_status & TERM_STATUS_MASK) == TERM_ST_BUSY) /* Aspetta finchè lo stato del terminale non è più "BUSY" */
 					;
 
 				pcb = verhogen_2(&terminal_semaphore[device][1]);
-				if (pcb) pcb->p_s.reg_v0 = ((termreg_t *)device_addr)->recv_status;
+				if (pcb) pcb->p_s.reg_v0 = ((termreg_t *)device_addr)->recv_status & TERM_STATUS_MASK;
 			}
 
-			/* Caso transmitted */
+			/* Caso transmit */
 			if((((termreg_t *)device_addr)->transm_status != TERM_ST_BUSY) && (((termreg_t *)device_addr)->transm_status != DEV_S_READY)){
 				((termreg_t *)device_addr)->transm_command = DEV_C_ACK; /* Faccio l'ack */
 				while((((termreg_t *)device_addr)->transm_status & TERM_STATUS_MASK) == TERM_ST_BUSY) /* Aspetta finchè lo stato del terminale non è più "BUSY" */
 					;
 
 				pcb = verhogen_2(&terminal_semaphore[device][0]);
-				if (pcb) pcb->p_s.reg_v0 = ((termreg_t *)device_addr)->transm_status;
+				if (pcb) pcb->p_s.reg_v0 = ((termreg_t *)device_addr)->transm_status & TERM_STATUS_MASK;
 			}
 		}
 	}

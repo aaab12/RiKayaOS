@@ -170,13 +170,23 @@ int do_io(unsigned int command, unsigned int *reg, unsigned int rw){
     nth_device = ((unsigned int)reg - first_terminal) / DEV_REG_SIZE; /* Calcolo quale degli 8 semafori dei terminali selezionare */
     semaphore = &terminal_semaphore[nth_device][rw];
 
-    ((termreg_t *)reg)->transm_command = command; /* Imposta il carattere da trasmettere e fa partire l'operazione di stampa su terminale */
+    if(rw){
+      ((termreg_t *)reg)->recv_command = command; /* Imposta il carattere da trasmettere e fa partire l'operazione di stampa su terminale */
 
-    while (((termreg_t *)reg)->transm_status == TERM_ST_BUSY); /* Aspetta finchè lo stato del terminale non è più "BUSY" */
+      while ((((termreg_t *)reg)->recv_status & TERM_STATUS_MASK) == TERM_ST_BUSY); /* Aspetta finchè lo stato del terminale non è più "BUSY" */
 
-    passeren(semaphore);
+      passeren(semaphore);
 
-    return current_process->p_s.reg_v0;
+      return current_process->p_s.reg_v0;
+    } else {
+      ((termreg_t *)reg)->transm_command = command; /* Imposta il carattere da trasmettere e fa partire l'operazione di stampa su terminale */
+
+      while ((((termreg_t *)reg)->transm_status & TERM_STATUS_MASK) == TERM_ST_BUSY); /* Aspetta finchè lo stato del terminale non è più "BUSY" */
+
+      passeren(semaphore);
+
+      return current_process->p_s.reg_v0;
+    }
   }
 }
 
