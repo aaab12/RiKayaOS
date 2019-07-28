@@ -14,6 +14,8 @@ extern struct list_head ready_queue;
 extern pcb_t* current_process;
 extern int clock_semaphore;
 extern int clock_semaphore_counter;
+extern int device_semaphore[DEV_PER_INT*(DEV_USED_INTS-1)];
+extern int terminal_semaphore[DEV_PER_INT][2];
 
 /* Process Local Timer handler */
 void plt_handler() {
@@ -51,6 +53,7 @@ void disk_handler(){
 			unsigned int device_addr = DEV_REG_ADDR(INT_DISK, device);
 			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
 		}
+		verhogen(&device_semaphore[device]);
 	}
 
   if(current_process){ /* Se c'era un processo in stato running ne salvo lo stato e lo rimetto nella coda dei processi ready */
@@ -70,6 +73,7 @@ void tape_handler(){
 			unsigned int device_addr = DEV_REG_ADDR(INT_TAPE, device);
 			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
 		}
+		verhogen(&device_semaphore[DEV_PER_INT + device]);
 	}
 
 	if(current_process){ /* Se c'era un processo in stato running ne salvo lo stato e lo rimetto nella coda dei processi ready */
@@ -89,6 +93,7 @@ void network_handler(){
 			unsigned int device_addr = DEV_REG_ADDR(INT_NETWORK, device);
 			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
 		}
+		verhogen(&device_semaphore[2 * DEV_PER_INT + device]);
 	}
 
 	if(current_process){ /* Se c'era un processo in stato running ne salvo lo stato e lo rimetto nella coda dei processi ready */
@@ -108,6 +113,7 @@ void printer_handler(){
 			unsigned int device_addr = DEV_REG_ADDR(INT_PRINTER, device);
 			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
 		}
+		verhogen(&device_semaphore[3 * DEV_PER_INT + device]);
 	}
 
 	if(current_process){ /* Se c'era un processo in stato running ne salvo lo stato e lo rimetto nella coda dei processi ready */
@@ -129,13 +135,19 @@ void terminal_handler(){
 			/* Caso recive */
 			if((((termreg_t *)device_addr)->recv_status != TERM_ST_BUSY) && (((termreg_t *)device_addr)->recv_status !=  DEV_S_READY)){
 			  ((termreg_t *)device_addr)->recv_command = DEV_C_ACK; /* Faccio l'ack */
-			  while((((termreg_t *)device_addr)->recv_status & TERM_STATUS_MASK) == TERM_ST_BUSY); /* Aspetta finchè lo stato del terminale non è più "BUSY" */
+			  while((((termreg_t *)device_addr)->recv_status & TERM_STATUS_MASK) == TERM_ST_BUSY) /* Aspetta finchè lo stato del terminale non è più "BUSY" */
+					;
+
+				verhogen(&terminal_semaphore[device][0]);
 			}
 
 			/* Caso transmitted */
 			if((((termreg_t *)device_addr)->transm_status != TERM_ST_BUSY) && (((termreg_t *)device_addr)->transm_status != DEV_S_READY)){
 				((termreg_t *)device_addr)->transm_command = DEV_C_ACK; /* Faccio l'ack */
-				while((((termreg_t *)device_addr)->transm_status & TERM_STATUS_MASK) == TERM_ST_BUSY);/* Aspetta finchè lo stato del terminale non è più "BUSY" */
+				while((((termreg_t *)device_addr)->transm_status & TERM_STATUS_MASK) == TERM_ST_BUSY) /* Aspetta finchè lo stato del terminale non è più "BUSY" */
+					;
+
+				verhogen(&terminal_semaphore[device][1]);
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 #include <umps/arch.h>
 #include "asl.h"
 #include "interrupt.h"
+#include <umps/libumps.h>
 #include "main.h"
 #include "pcb.h"
 #include "scheduler.h"
@@ -13,6 +14,8 @@ extern pcb_t* current_process;
 extern int process_counter;
 extern int clock_semaphore;
 extern int clock_semaphore_counter;
+extern int device_semaphore[DEV_PER_INT*(DEV_USED_INTS-1)];
+extern int terminal_semaphore[DEV_PER_INT][2];
 
 /* SYS1: ritorna il tempo passato in user mode, kernel mode e tempo totale trascorso dalla prima attivazione */
 void get_cpu_time(unsigned int *user, unsigned int *kernel, unsigned int *wallclock){
@@ -126,9 +129,15 @@ void wait_clock(){
 
 /* SYS7: attiva un'operazione di I/O */
 int do_io(unsigned int command, unsigned int *reg, unsigned int rw){
+  int first_device = DEV_REG_ADDR(INT_DISK, 0); /* Indirizzo del primo device */
   int first_terminal = DEV_REG_ADDR(INT_TERMINAL, 0); /* Indirizzo del primo terminale */
+  int *semaphore; /* Semaforo su cui deve bloccarsi il processo */
+  int nth_device; /* N-esimo device passato come parametro, quello di cui selezionare il semaforo */
 
   if((unsigned int)reg < first_terminal){ /* Il device non è un terminale */
+    nth_device = ((unsigned int)reg - first_device) / DEV_REG_SIZE; /* Calcolo quale dei 32 semafori dei device selezionare */
+    semaphore = &device_semaphore[nth_device];
+
     if (((dtpreg_t *)reg)->status != DEV_S_READY) return -1; /* Se lo stato del device non è "READY" ritorna */
 
     /* Il parametro command contiene comando+carattere */
@@ -137,11 +146,18 @@ int do_io(unsigned int command, unsigned int *reg, unsigned int rw){
 
     while (((dtpreg_t *)reg)->status == TERM_ST_BUSY); /* Aspetta finchè lo stato del device non è più "BUSY" */
 
+    passeren(semaphore);
+
     return *(reg);
   } else { /* Il device è un terminale */
+    nth_device = ((unsigned int)reg - first_terminal) / DEV_REG_SIZE; /* Calcolo quale degli 8 semafori dei terminali selezionare */
+    semaphore = &terminal_semaphore[nth_device][rw];
+
     ((termreg_t *)reg)->transm_command = command; /* Imposta il carattere da trasmettere e fa partire l'operazione di stampa su terminale */
 
     while (((termreg_t *)reg)->transm_status == TERM_ST_BUSY); /* Aspetta finchè lo stato del terminale non è più "BUSY" */
+
+    passeren(semaphore);
 
     return *(reg + 2); /* (base) + 2 = TRANSM_STATUS */
   }
