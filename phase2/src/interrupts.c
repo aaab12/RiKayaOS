@@ -53,8 +53,8 @@ void disk_handler(){
 		if (pending){ /* ...per ognuno di questi faccio l'ack dopo averne trovato l'indirizzo */
 			unsigned int device_addr = DEV_REG_ADDR(INT_DISK, device);
 			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
+			verhogen(&device_semaphore[device]);
 		}
-		verhogen(&device_semaphore[device]);
 	}
 
   if(current_process){ /* Se c'era un processo in stato running ne salvo lo stato e lo rimetto nella coda dei processi ready */
@@ -74,8 +74,8 @@ void tape_handler(){
 		if (pending){ /* ...per ognuno di questi faccio l'ack dopo averne trovato l'indirizzo */
 			unsigned int device_addr = DEV_REG_ADDR(INT_TAPE, device);
 			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
+			verhogen(&device_semaphore[DEV_PER_INT + device]);
 		}
-		verhogen(&device_semaphore[DEV_PER_INT + device]);
 	}
 
 	if(current_process){ /* Se c'era un processo in stato running ne salvo lo stato e lo rimetto nella coda dei processi ready */
@@ -95,8 +95,8 @@ void network_handler(){
 		if (pending){ /* ...per ognuno di questi faccio l'ack dopo averne trovato l'indirizzo */
 			unsigned int device_addr = DEV_REG_ADDR(INT_NETWORK, device);
 			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
+			verhogen(&device_semaphore[2 * DEV_PER_INT + device]);
 		}
-		verhogen(&device_semaphore[2 * DEV_PER_INT + device]);
 	}
 
 	if(current_process){ /* Se c'era un processo in stato running ne salvo lo stato e lo rimetto nella coda dei processi ready */
@@ -116,8 +116,8 @@ void printer_handler(){
 		if (pending){ /* ...per ognuno di questi faccio l'ack dopo averne trovato l'indirizzo */
 			unsigned int device_addr = DEV_REG_ADDR(INT_PRINTER, device);
 			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
+			verhogen(&device_semaphore[3 * DEV_PER_INT + device]);
 		}
-		verhogen(&device_semaphore[3 * DEV_PER_INT + device]);
 	}
 
 	if(current_process){ /* Se c'era un processo in stato running ne salvo lo stato e lo rimetto nella coda dei processi ready */
