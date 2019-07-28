@@ -49,6 +49,7 @@ void it_handler(){
 void disk_handler(){
   for (int device = 0; device < 8; device++){ /* Cerco i device disk che hanno interrupt pending: per ogni sotto-device da 0 a 7... */
 		int pending = PENDING_BITMAP_START + (WORD_SIZE * (INT_DISK - 3)); /* ...mi interessano quelli con interrupt pending */
+		pending = *((uint32_t *)pending) << (1 << device);
 		if (pending){ /* ...per ognuno di questi faccio l'ack dopo averne trovato l'indirizzo */
 			unsigned int device_addr = DEV_REG_ADDR(INT_DISK, device);
 			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
@@ -69,6 +70,7 @@ void disk_handler(){
 void tape_handler(){
 	for (int device = 0; device < 8; device++){ /* Cerco i device tape che hanno interrupt pending: per ogni sotto-device da 0 a 7... */
 		int pending = PENDING_BITMAP_START + (WORD_SIZE * (INT_TAPE - 3)); /* ...mi interessano quelli con interrupt pending */
+		pending = *((uint32_t *)pending) << (1 << device);
 		if (pending){ /* ...per ognuno di questi faccio l'ack dopo averne trovato l'indirizzo */
 			unsigned int device_addr = DEV_REG_ADDR(INT_TAPE, device);
 			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
@@ -89,6 +91,7 @@ void tape_handler(){
 void network_handler(){
 	for (int device = 0; device < 8; device++){ /* Cerco i device network che hanno interrupt pending: per ogni sotto-device da 0 a 7... */
 		int pending = PENDING_BITMAP_START + (WORD_SIZE * (INT_NETWORK - 3)); /* ...mi interessano quelli con interrupt pending */
+		pending = *((uint32_t *)pending) << (1 << device);
 		if (pending){ /* ...per ognuno di questi faccio l'ack dopo averne trovato l'indirizzo */
 			unsigned int device_addr = DEV_REG_ADDR(INT_NETWORK, device);
 			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
@@ -109,6 +112,7 @@ void network_handler(){
 void printer_handler(){
 	for (int device = 0; device < 8; device++){ /* Cerco i device printer che hanno interrupt pending: per ogni sotto-device da 0 a 7... */
 		int pending = PENDING_BITMAP_START + (WORD_SIZE * (INT_PRINTER - 3)); /* ...mi interessano quelli con interrupt pending */
+		pending = *((unsigned int *)pending) << (1 << device);
 		if (pending){ /* ...per ognuno di questi faccio l'ack dopo averne trovato l'indirizzo */
 			unsigned int device_addr = DEV_REG_ADDR(INT_PRINTER, device);
 			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
@@ -129,6 +133,7 @@ void printer_handler(){
 void terminal_handler(){
 	for (int device = 0; device < 8; device++){ /* Cerco i device terminal che hanno interrupt pending: per ogni sotto-device da 0 a 7... */
 		int pending = PENDING_BITMAP_START + (WORD_SIZE * (INT_TERMINAL - 3)); /* ...mi interessano quelli con interrupt pending */
+		pending = *((uint32_t *)pending) << (1 << device);
 		if (pending){ /* ...per ognuno di questi faccio l'ack dopo averne trovato l'indirizzo */
 			unsigned int device_addr = DEV_REG_ADDR(INT_TERMINAL, device);
 
