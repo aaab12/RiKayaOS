@@ -143,7 +143,7 @@ void terminal_handler(){
 			  while((((termreg_t *)device_addr)->recv_status & TERM_STATUS_MASK) == TERM_ST_BUSY) /* Aspetta finchè lo stato del terminale non è più "BUSY" */
 					;
 
-				verhogen(&terminal_semaphore[device][0]);
+				verhogen(&terminal_semaphore[device][1]);
 			}
 
 			/* Caso transmitted */
@@ -152,7 +152,7 @@ void terminal_handler(){
 				while((((termreg_t *)device_addr)->transm_status & TERM_STATUS_MASK) == TERM_ST_BUSY) /* Aspetta finchè lo stato del terminale non è più "BUSY" */
 					;
 
-				verhogen(&terminal_semaphore[device][1]);
+				verhogen(&terminal_semaphore[device][0]);
 			}
 		}
 	}
