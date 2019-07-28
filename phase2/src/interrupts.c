@@ -110,13 +110,15 @@ void network_handler(){
 
 /* Printer handler */
 void printer_handler(){
+	pcb_t* pcb;
 	for (int device = 0; device < 8; device++){ /* Cerco i device printer che hanno interrupt pending: per ogni sotto-device da 0 a 7... */
 		int pending = PENDING_BITMAP_START + (WORD_SIZE * (INT_PRINTER - 3)); /* ...mi interessano quelli con interrupt pending */
 		pending = *((unsigned int *)pending) << (1 << device);
 		if (pending){ /* ...per ognuno di questi faccio l'ack dopo averne trovato l'indirizzo */
 			unsigned int device_addr = DEV_REG_ADDR(INT_PRINTER, device);
 			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
-			verhogen(&device_semaphore[3 * DEV_PER_INT + device]);
+			pcb = verhogen_2(&device_semaphore[3 * DEV_PER_INT + device]);
+			if (pcb) pcb->p_s.reg_v0 = ((dtpreg_t *)device_addr)->status;
 		}
 	}
 
@@ -131,6 +133,7 @@ void printer_handler(){
 
 /* Terminal handler */
 void terminal_handler(){
+	pcb_t* pcb;
 	for (int device = 0; device < 8; device++){ /* Cerco i device terminal che hanno interrupt pending: per ogni sotto-device da 0 a 7... */
 		int pending = PENDING_BITMAP_START + (WORD_SIZE * (INT_TERMINAL - 3)); /* ...mi interessano quelli con interrupt pending */
 		pending = *((uint32_t *)pending) << (1 << device);
@@ -143,7 +146,8 @@ void terminal_handler(){
 			  while((((termreg_t *)device_addr)->recv_status & TERM_STATUS_MASK) == TERM_ST_BUSY) /* Aspetta finchè lo stato del terminale non è più "BUSY" */
 					;
 
-				verhogen(&terminal_semaphore[device][1]);
+				pcb = verhogen_2(&terminal_semaphore[device][1]);
+				if (pcb) pcb->p_s.reg_v0 = ((termreg_t *)device_addr)->recv_status;
 			}
 
 			/* Caso transmitted */
@@ -152,7 +156,8 @@ void terminal_handler(){
 				while((((termreg_t *)device_addr)->transm_status & TERM_STATUS_MASK) == TERM_ST_BUSY) /* Aspetta finchè lo stato del terminale non è più "BUSY" */
 					;
 
-				verhogen(&terminal_semaphore[device][0]);
+				pcb = verhogen_2(&terminal_semaphore[device][0]);
+				if (pcb) pcb->p_s.reg_v0 = ((termreg_t *)device_addr)->transm_status;
 			}
 		}
 	}

@@ -109,6 +109,23 @@ void verhogen(int *semaddr){
   }
 }
 
+/* SYS4 (versione 2) */
+pcb_t* verhogen_2(int *semaddr){
+  pcb_t *pcb;
+
+  *semaddr += 1; /* Aumenta il valore del semaforo */
+
+  if(*semaddr <= 0){ /* Se il semaforo è negativo, significa che c'è almeno un processo in attesa su quel semaforo */
+    pcb = removeBlocked(semaddr); /* Recupero del primo processo bloccato sul semaforo */
+    if(pcb){ /* Se la key del semaforo è presente */
+      pcb->priority = pcb->original_priority; /* Ripristino della priorità originale */
+      insertProcQ(&ready_queue, pcb); /* Inserisce il processo sbloccato nella coda dei processi in stato ready */
+      return pcb;
+    }
+  }
+  return NULL;
+}
+
 /* SYS5: richiesta di un semaforo */
 void passeren(int *semaddr){
   *semaddr -= 1; /* Diminuisce il valore del semaforo */
@@ -148,7 +165,7 @@ int do_io(unsigned int command, unsigned int *reg, unsigned int rw){
 
     passeren(semaphore);
 
-    return *(reg);
+    return current_process->p_s.reg_v0;
   } else { /* Il device è un terminale */
     nth_device = ((unsigned int)reg - first_terminal) / DEV_REG_SIZE; /* Calcolo quale degli 8 semafori dei terminali selezionare */
     semaphore = &terminal_semaphore[nth_device][rw];
@@ -159,7 +176,7 @@ int do_io(unsigned int command, unsigned int *reg, unsigned int rw){
 
     passeren(semaphore);
 
-    return *(reg + 2); /* (base) + 2 = TRANSM_STATUS */
+    return current_process->p_s.reg_v0;
   }
 }
 
