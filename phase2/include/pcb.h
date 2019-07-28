@@ -1,9 +1,7 @@
 #ifndef _PCB_H
 #define _PCB_H
 
-#include "const_rikaya.h"
 #include "types_rikaya.h"
-#include "listx.h"
 
 //USER
 void inizializzapcb(struct pcb_t* p);

@@ -1,10 +1,6 @@
 #ifndef _UTILS_H
 #define _UTILS_H
 
-#include "const.h"
-#include "handler.h"
-#include "pcb.h"
-
 void initNewAreas();
 
 pcb_t* initPCB(void (*f), int n);

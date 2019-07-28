@@ -1,9 +1,12 @@
+#include <umps/arch.h>
 #include "const.h"
 #include "const_rikaya.h"
 #include "interrupt.h"
 #include <umps/libumps.h>
 #include "main.h"
+#include "pcb.h"
 #include "scheduler.h"
+#include "syscall.h"
 #include "types_rikaya.h"
 #include "utils.h"
 
@@ -126,13 +129,13 @@ void terminal_handler(){
 			/* Caso recive */
 			if((((termreg_t *)device_addr)->recv_status != TERM_ST_BUSY) && (((termreg_t *)device_addr)->recv_status !=  DEV_S_READY)){
 			  ((termreg_t *)device_addr)->recv_command = DEV_C_ACK; /* Faccio l'ack */
-			  while((((termreg_t *)device_addr)->recv_status & TERM_STATUS_MASK) == TERM_ST_BUSY); /* Attendo che lo status torni ready */
+			  while((((termreg_t *)device_addr)->recv_status & TERM_STATUS_MASK) == TERM_ST_BUSY); /* Aspetta finchè lo stato del terminale non è più "BUSY" */
 			}
 
 			/* Caso transmitted */
 			if((((termreg_t *)device_addr)->transm_status != TERM_ST_BUSY) && (((termreg_t *)device_addr)->transm_status != DEV_S_READY)){
 				((termreg_t *)device_addr)->transm_command = DEV_C_ACK; /* Faccio l'ack */
-				while((((termreg_t *)device_addr)->transm_status & TERM_STATUS_MASK) == TERM_ST_BUSY); /* Attendo che lo status torni ready */
+				while((((termreg_t *)device_addr)->transm_status & TERM_STATUS_MASK) == TERM_ST_BUSY);/* Aspetta finchè lo stato del terminale non è più "BUSY" */
 			}
 		}
 	}

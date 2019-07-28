@@ -1,4 +1,7 @@
+#include "const_rikaya.h"
+#include "listx.h"
 #include "pcb.h"
+#include "types_rikaya.h"
 
 // pcbFree_table: array dei pcb free
 HIDDEN struct pcb_t pcbFree_table[MAXPROC];

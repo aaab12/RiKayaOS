@@ -1,4 +1,10 @@
+#include "asl.h"
+#include "const.h"
+#include "const_rikaya.h"
 #include "main.h"
+#include "pcb.h"
+#include "scheduler.h"
+#include "utils.h"
 
 struct list_head ready_queue; /* Coda dei processi in stato ready */
 pcb_t* current_process; /* Puntatore al processo attualmente in esecuzione */

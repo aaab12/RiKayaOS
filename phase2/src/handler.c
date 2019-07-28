@@ -1,4 +1,11 @@
+#include "const_rikaya.h"
 #include "handler.h"
+#include "interrupt.h"
+#include <umps/libumps.h>
+#include "scheduler.h"
+#include "syscall.h"
+#include "types_rikaya.h"
+#include "utils.h"
 
 extern pcb_t* current_process;
 
@@ -58,7 +65,7 @@ void sysbk_handler(){
 				case GETPID:
 					get_pid_ppid((void **) arg1, (void **) arg2);
 					break;
-				default:
+				default: /* Delego a handler di livello superiore se specificato */
 					if (!current_process->passup[SYSCALL_TYPE])
 						terminate_process(0);
 					save_state(caller_process, (current_process->passup_oldarea[SYSCALL_TYPE]));
@@ -67,12 +74,12 @@ void sysbk_handler(){
 			}
 		} else { /* user mode */
 			/* Syscall invocata in user mode, quindi lancio TRAP */
+			/* (non entra mai qua, entra direttamente in pgmtrap_handler) */
 			pgmtrap_handler();
 		}
 	} else if (CAUSE_EXCCODE_GET(cause) == 9){ /* BREAKPOINT */
-			if (!current_process->passup[SYSCALL_TYPE])
+			if (!current_process->passup[SYSCALL_TYPE]) /* Delego a handler di livello superiore se specificato */
 				terminate_process(0);
-
 			save_state(caller_process, (current_process->passup_oldarea[SYSCALL_TYPE]));
 			LDST(current_process->passup_newarea[SYSCALL_TYPE]);
 	}
@@ -87,10 +94,10 @@ void sysbk_handler(){
 
 /* Program Traps handler */
 void pgmtrap_handler(){
-	state_t* caller_process = (state_t *)PGMTRAP_OLDAREA;
+	state_t* caller_process = (state_t *)PGMTRAP_OLDAREA; /* Processo chiamante */
 	caller_process->pc_epc += WORD_SIZE;
 
-	if (!current_process->passup[TRAP_TYPE])
+	if (!current_process->passup[TRAP_TYPE]) /* Delego a handler di livello superiore se specificato */
 		terminate_process(0);
 
 	save_state(caller_process, (current_process->passup_oldarea[TRAP_TYPE]));
@@ -99,10 +106,10 @@ void pgmtrap_handler(){
 
 /* TLB Management handler */
 void tlb_handler(){
-	state_t* caller_process = (state_t *)TLB_OLDAREA;
+	state_t* caller_process = (state_t *)TLB_OLDAREA; /* Processo chiamante */
 	caller_process->pc_epc += WORD_SIZE;
 
-	if (!current_process->passup[TLB_TYPE])
+	if (!current_process->passup[TLB_TYPE]) /* Delego a handler di livello superiore se specificato */
 		terminate_process(0);
 
 	save_state(caller_process, (current_process->passup_oldarea[TLB_TYPE]));

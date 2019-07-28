@@ -1,4 +1,9 @@
+#include "const.h"
+#include <umps/libumps.h>
+#include "main.h"
+#include "pcb.h"
 #include "scheduler.h"
+#include "utils.h"
 
 extern struct list_head ready_queue;
 extern pcb_t* current_process;

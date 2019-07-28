@@ -1,10 +1,7 @@
 #ifndef _SYSCALL_H
 #define _SYSCALL_H
 
-#include <umps/arch.h>
 #include <umps/types.h>
-#include "main.h"
-#include "pcb.h"
 
 void get_cpu_time(unsigned int *user, unsigned int *kernel, unsigned int *wallclock);
 

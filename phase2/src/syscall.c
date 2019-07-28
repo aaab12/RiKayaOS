@@ -1,4 +1,12 @@
+#include <umps/arch.h>
+#include "asl.h"
+#include "interrupt.h"
+#include "main.h"
+#include "pcb.h"
+#include "scheduler.h"
 #include "syscall.h"
+#include <umps/types.h>
+#include "utils.h"
 
 extern struct list_head ready_queue;
 extern pcb_t* current_process;
@@ -36,7 +44,8 @@ int create_process(state_t *statep, int priority, void ** cpid){
   return 0;
 }
 
-/* SYS3: */
+/* SYS3: termina il processo specificato ma non la sua progenie */
+/* I figli del processo da terminare diventano figli del primo antenato indicato come tutor */
 int terminate_process(void ** pid){
   pcb_t *pcb;
   pcb_t *parent = NULL;
@@ -62,7 +71,7 @@ int terminate_process(void ** pid){
     tutor = tutor->p_parent; /* Trova il primo antenato tutor */
 
   if(pcb->p_semkey){ /* Se il processo è bloccato su un semaforo, rilascio la risorsa */
-    *pcb->p_semkey += 1;
+    verhogen(pcb->p_semkey);
   }
 
   while(!emptyChild(pcb)){
@@ -76,7 +85,6 @@ int terminate_process(void ** pid){
   freePcb(pcb); /* Libero il PCB */
 
   if(pcb == current_process){ /* Se termina il processo attuale, il controllo passa allo scheduler */
-    current_process = NULL;
     scheduler();
   }
 
@@ -116,22 +124,24 @@ void wait_clock(){
   passeren(&clock_semaphore); /* P sul semaforo del clock */
 }
 
+/* SYS7: attiva un'operazione di I/O */
 int do_io(unsigned int command, unsigned int *reg, unsigned int rw){
   int first_terminal = DEV_REG_ADDR(INT_TERMINAL, 0); /* Indirizzo del primo terminale */
 
   if((unsigned int)reg < first_terminal){ /* Il device non è un terminale */
     if (((dtpreg_t *)reg)->status != DEV_S_READY) return -1; /* Se lo stato del device non è "READY" ritorna */
 
+    /* Il parametro command contiene comando+carattere */
     ((dtpreg_t *)reg)->data0 = (command >> 8);
     ((dtpreg_t *)reg)->command = (uint8_t) command;
 
-    while (((dtpreg_t *)reg)->status == 3); /* Aspetta finchè lo stato del device non è più "BUSY" */
+    while (((dtpreg_t *)reg)->status == TERM_ST_BUSY); /* Aspetta finchè lo stato del device non è più "BUSY" */
 
     return *(reg);
   } else { /* Il device è un terminale */
     ((termreg_t *)reg)->transm_command = command; /* Imposta il carattere da trasmettere e fa partire l'operazione di stampa su terminale */
 
-    while (((termreg_t *)reg)->transm_status == 3); /* Aspetta finchè lo stato del terminale non è più "BUSY" */
+    while (((termreg_t *)reg)->transm_status == TERM_ST_BUSY); /* Aspetta finchè lo stato del terminale non è più "BUSY" */
 
     return *(reg + 2); /* (base) + 2 = TRANSM_STATUS */
   }
@@ -142,6 +152,7 @@ void set_tutor(){
   current_process->tutor = TRUE;
 }
 
+/* SYS9: indica quale handler di livello superiore deve essere attivato */
 int spec_passup(int type, state_t *old, state_t *new){
   if(current_process->passup[type]) return -1;
   current_process->passup[type] = TRUE;

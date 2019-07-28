@@ -1,3 +1,7 @@
+#include "const.h"
+#include "handler.h"
+#include <umps/libumps.h>
+#include "pcb.h"
 #include "utils.h"
 
 extern int process_counter;
