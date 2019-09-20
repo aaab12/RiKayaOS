@@ -16,7 +16,6 @@ extern int clock_semaphore;
 extern int clock_semaphore_counter;
 extern int device_semaphore[DEV_PER_INT*(DEV_USED_INTS-1)];
 extern int terminal_semaphore[DEV_PER_INT][2];
-void fundebug2();
 
 /* Process Local Timer handler */
 void plt_handler() {
@@ -89,7 +88,6 @@ void tape_handler(){
 		user_mode(current_process); /* Il processo torna in user mode */
 		insertProcQ(&ready_queue, current_process); /* Reinserimento del processo interrotto in stato ready */
 	}
-	fundebug2();
 	scheduler(); /* Il controllo va allo scheduler */
 }
 
@@ -125,8 +123,8 @@ void printer_handler(){
 		if (pending){ /* ...per ognuno di questi faccio l'ack dopo averne trovato l'indirizzo */
 			unsigned int device_addr = DEV_REG_ADDR(INT_PRINTER, device);
 			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
-			pcb = verhogen_2(&device_semaphore[3 * DEV_PER_INT + device]); 
-			if (pcb) pcb->p_s.reg_v0 = ((dtpreg_t *)device_addr)->status; 
+			pcb = verhogen_2(&device_semaphore[3 * DEV_PER_INT + device]);
+			if (pcb) pcb->p_s.reg_v0 = ((dtpreg_t *)device_addr)->status;
 		}
 	}
 
@@ -155,7 +153,6 @@ void terminal_handler(){
 			  ((termreg_t *)device_addr)->recv_command = DEV_C_ACK; /* Faccio l'ack */
 			  while((((termreg_t *)device_addr)->recv_status & TERM_STATUS_MASK) != DEV_S_READY) /* Aspetta finchè lo stato del terminale non è "READY" */
 					;
-
 			}
 
 			/* Caso transmit */
@@ -165,13 +162,11 @@ void terminal_handler(){
 				((termreg_t *)device_addr)->transm_command = DEV_C_ACK; /* Faccio l'ack */
 				while((((termreg_t *)device_addr)->transm_status & TERM_STATUS_MASK) != DEV_S_READY) /* Aspetta finchè lo stato del terminale non è "READY" */
 					;
-
 			}
 		}
 	}
 
 	if(current_process){ /* Se c'era un processo in stato running ne salvo lo stato e lo rimetto nella coda dei processi ready */
-	  fundebug2();
 		state_t* caller_process = (state_t *)INT_OLDAREA;
 		save_state(caller_process, &(current_process->p_s));
 		user_mode(current_process); /* Il processo torna in user mode */
@@ -179,6 +174,3 @@ void terminal_handler(){
 	}
 	scheduler(); /* Il controllo va allo scheduler */
 }
-
-
-void fundebug2(){}
