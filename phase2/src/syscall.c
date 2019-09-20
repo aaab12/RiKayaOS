@@ -139,17 +139,6 @@ void passeren(int *semaddr){
   }
 }
 
-void passeren_2(int *semaddr){
- *semaddr -= 1; /* Diminuisce il valore del semaforo */
-  if(*semaddr < 0){ /* Se il valore del semaforo è negativo */
-    outProcQ(&ready_queue, current_process); /* Rimuove il processo dalla ready queue */
-    insertBlocked(semaddr, current_process); /* Blocca il processo sul semaforo */
-    // save_state((state_t *)SYSBK_OLDAREA, &current_process->p_s); /* Ripristino lo stato originario del processo */
-    user_mode(current_process); /* Il processo torna in user mode */
-    scheduler(); /* Il controllo passa allo scheduler */
-  }
-}
-
 /* SYS6: sospende il processo per 100ms */
 void wait_clock(){
   clock_semaphore_counter++;
