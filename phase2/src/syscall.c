@@ -221,5 +221,3 @@ int spec_passup(int type, state_t *old, state_t *new){
    if (ppid) *ppid = current_process->p_parent;
 }
 
-void fundebug1() {
-}
