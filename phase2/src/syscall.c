@@ -16,6 +16,7 @@ extern int clock_semaphore;
 extern int clock_semaphore_counter;
 extern int device_semaphore[DEV_PER_INT*(DEV_USED_INTS-1)];
 extern int terminal_semaphore[DEV_PER_INT][2];
+void fundebug1();
 
 /* SYS1: ritorna il tempo passato in user mode, kernel mode e tempo totale trascorso dalla prima attivazione */
 void get_cpu_time(unsigned int *user, unsigned int *kernel, unsigned int *wallclock){
@@ -138,6 +139,17 @@ void passeren(int *semaddr){
   }
 }
 
+void passeren_2(int *semaddr){
+ *semaddr -= 1; /* Diminuisce il valore del semaforo */
+  if(*semaddr < 0){ /* Se il valore del semaforo è negativo */
+    outProcQ(&ready_queue, current_process); /* Rimuove il processo dalla ready queue */
+    insertBlocked(semaddr, current_process); /* Blocca il processo sul semaforo */
+    // save_state((state_t *)SYSBK_OLDAREA, &current_process->p_s); /* Ripristino lo stato originario del processo */
+    user_mode(current_process); /* Il processo torna in user mode */
+    scheduler(); /* Il controllo passa allo scheduler */
+  }
+}
+
 /* SYS6: sospende il processo per 100ms */
 void wait_clock(){
   clock_semaphore_counter++;
@@ -145,7 +157,7 @@ void wait_clock(){
 }
 
 /* SYS7: attiva un'operazione di I/O */
-int do_io(unsigned int command, unsigned int *reg, unsigned int rw){
+U32 do_io(unsigned int command, unsigned int *reg, unsigned int rw){
   int first_device = DEV_REG_ADDR(INT_DISK, 0); /* Indirizzo del primo device */
   int first_terminal = DEV_REG_ADDR(INT_TERMINAL, 0); /* Indirizzo del primo terminale */
   int *semaphore; /* Semaforo su cui deve bloccarsi il processo */
@@ -154,38 +166,47 @@ int do_io(unsigned int command, unsigned int *reg, unsigned int rw){
   if((unsigned int)reg < first_terminal){ /* Il device non è un terminale */
     nth_device = ((unsigned int)reg - first_device) / DEV_REG_SIZE; /* Calcolo quale dei 32 semafori dei device selezionare */
     semaphore = &device_semaphore[nth_device];
-
+    
     if (((dtpreg_t *)reg)->status != DEV_S_READY) return -1; /* Se lo stato del device non è "READY" ritorna */
 
     /* Il parametro command contiene comando+carattere */
     ((dtpreg_t *)reg)->data0 = (command >> 8);
     ((dtpreg_t *)reg)->command = (uint8_t) command;
-
-    while (((dtpreg_t *)reg)->status == TERM_ST_BUSY); /* Aspetta finchè lo stato del device non è più "BUSY" */
+    
+     while (((dtpreg_t *)reg)->status == TERM_ST_BUSY); /* Aspetta finchè lo stato del device non è più "BUSY" */
 
     passeren(semaphore);
 
-    return current_process->p_s.reg_v0;
+
+    return ((dtpreg_t *)reg)->status;
+    
   } else { /* Il device è un terminale */
     nth_device = ((unsigned int)reg - first_terminal) / DEV_REG_SIZE; /* Calcolo quale degli 8 semafori dei terminali selezionare */
     semaphore = &terminal_semaphore[nth_device][rw];
-
+   
     if(rw){
-      ((termreg_t *)reg)->recv_command = command; /* Imposta il carattere da trasmettere e fa partire l'operazione di stampa su terminale */
+    
+      ((termreg_t *)reg)->recv_command = (uint8_t) command; 
 
       while ((((termreg_t *)reg)->recv_status & TERM_STATUS_MASK) == TERM_ST_BUSY); /* Aspetta finchè lo stato del terminale non è più "BUSY" */
 
       passeren(semaphore);
+      
+      while ((((termreg_t *)reg)->recv_status & TERM_STATUS_MASK) != DEV_S_READY);
 
-      return current_process->p_s.reg_v0;
+      return ((termreg_t *)reg)->recv_status;
+      
     } else {
       ((termreg_t *)reg)->transm_command = command; /* Imposta il carattere da trasmettere e fa partire l'operazione di stampa su terminale */
 
       while ((((termreg_t *)reg)->transm_status & TERM_STATUS_MASK) == TERM_ST_BUSY); /* Aspetta finchè lo stato del terminale non è più "BUSY" */
 
       passeren(semaphore);
+      
+      while ((((termreg_t *)reg)->transm_status & TERM_STATUS_MASK) != DEV_S_READY);
 
-      return current_process->p_s.reg_v0;
+      return ((termreg_t *)reg)->transm_status;
+      
     }
   }
 }
@@ -209,4 +230,7 @@ int spec_passup(int type, state_t *old, state_t *new){
  void get_pid_ppid(void **pid, void **ppid) {
    if (pid) *pid = current_process;
    if (ppid) *ppid = current_process->p_parent;
+}
+
+void fundebug1() {
 }

@@ -133,6 +133,7 @@ void print(char *msg) {
 
 		/*		PANIC(); */
 
+
 		if ((status & TERMSTATMASK) != TRANSM)
 			PANIC();
 

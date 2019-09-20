@@ -78,6 +78,7 @@ typedef unsigned int pid_t;
 
 
 SEMAPHORE term_mut=1,	/* for mutual exclusion on terminal */
+  printer_mut=1,
 					s[MAXSEM+1],	/* semaphore array */
 					testsem=0,		/* for a simple test */
 					startp2=0,		/* used to start p2 */
@@ -122,7 +123,7 @@ void printer0(char *msg) {
 	devregtr base = DEV_REG_ADDR(IL_PRINTER, 0);
 	devregtr status;
 
-	SYSCALL(PASSEREN, (int)&term_mut, 0, 0);				/* get term_mut lock */
+	SYSCALL(PASSEREN, (int)&printer_mut, 0, 0);				/* get term_mut lock */
 
 	while (*s != '\0') {
 		/* Put "transmit char" command+char in term0 register (3rd word). This
@@ -140,7 +141,7 @@ void printer0(char *msg) {
 		s++;
 	}
 
-	SYSCALL(VERHOGEN, (int)&term_mut, 0, 0);				/* release term_mut */
+	SYSCALL(VERHOGEN, (int)&printer_mut, 0, 0);				/* release term_mut */
 }
 
 /* a procedure to print on printer1 */
@@ -150,7 +151,7 @@ void printer1(char *msg) {
 	devregtr base = DEV_REG_ADDR(IL_PRINTER, 1);
 	devregtr status;
 
-	SYSCALL(PASSEREN, (int)&term_mut, 0, 0);				/* get term_mut lock */
+	SYSCALL(PASSEREN, (int)&printer_mut, 0, 0);				/* get term_mut lock */
 
 	while (*s != '\0') {
 		/* Put "transmit char" command+char in term0 register (3rd word). This
@@ -168,7 +169,7 @@ void printer1(char *msg) {
 		s++;
 	}
 
-	SYSCALL(VERHOGEN, (int)&term_mut, 0, 0);				/* release term_mut */
+	SYSCALL(VERHOGEN, (int)&printer_mut, 0, 0);				/* release term_mut */
 }
 
 /* a procedure to print on terminal 0 */
@@ -192,11 +193,12 @@ void print(char *msg) {
 
 		/*		PANIC(); */
 
-		if ((status & TERMSTATMASK) == TRANSM)
+		//	if ((status & TERMSTATMASK) == 5) HALT();
+		if ((status & TERMSTATMASK) != TRANSM)
 			PANIC();
 
-		// if (((status & TERMCHARMASK) >> BYTELEN) != *s)
-		// 	PANIC();
+		if (((status & TERMCHARMASK) >> BYTELEN) != *s)
+		 	PANIC();
 
 		s++;
 	}
@@ -208,7 +210,7 @@ void print(char *msg) {
 /*                                                                   */
 /*                 p1 -- the root process                            */
 /*                                                                   */
-void test() {
+ void test() {
 	SYSCALL(VERHOGEN, (int)&testsem, 0, 0);					/* V(testsem)   */
 
 	if (testsem != 1) { print("error: p1 v(testsem) with no effects\n"); PANIC(); }
