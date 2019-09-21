@@ -193,7 +193,6 @@ void print(char *msg) {
 
 		/*		PANIC(); */
 
-		//	if ((status & TERMSTATMASK) == 5) HALT();
 		if ((status & TERMSTATMASK) != TRANSM)
 			PANIC();
 
