@@ -154,42 +154,33 @@ U32 do_io(unsigned int command, unsigned int *reg, unsigned int rw){
   if((unsigned int)reg < first_terminal){ /* Il device non è un terminale */
     nth_device = ((unsigned int)reg - first_device) / DEV_REG_SIZE; /* Calcolo quale dei 32 semafori dei device selezionare */
     semaphore = &device_semaphore[nth_device];
-
     if (((dtpreg_t *)reg)->status != DEV_S_READY) return -1; /* Se lo stato del device non è "READY" ritorna */
 
     /* Il parametro command contiene comando+carattere */
     ((dtpreg_t *)reg)->data0 = (command >> 8);
     ((dtpreg_t *)reg)->command = (uint8_t) command;
 
-     while (((dtpreg_t *)reg)->status == TERM_ST_BUSY); /* Aspetta finchè lo stato del device non è più "BUSY" */
-
-    passeren(semaphore);
-
+    while (((dtpreg_t *)reg)->status == DEV_ST_BUSY); /* Aspetta finchè lo stato del device non è più "BUSY" */
+    passeren(semaphore); 
     return ((dtpreg_t *)reg)->status;
 
   } else { /* Il device è un terminale */
     nth_device = ((unsigned int)reg - first_terminal) / DEV_REG_SIZE; /* Calcolo quale degli 8 semafori dei terminali selezionare */
     semaphore = &terminal_semaphore[nth_device][rw];
 
-    if(rw){
+    if(rw){ /* caso received */
       ((termreg_t *)reg)->recv_command = (uint8_t) command;
 
       while ((((termreg_t *)reg)->recv_status & TERM_STATUS_MASK) == TERM_ST_BUSY); /* Aspetta finchè lo stato del terminale non è più "BUSY" */
-
       passeren(semaphore);
-
       while ((((termreg_t *)reg)->recv_status & TERM_STATUS_MASK) != DEV_S_READY); /* Aspetta finchè lo stato del terminale non è "READY" */
-
       return ((termreg_t *)reg)->recv_status;
-    } else {
+      
+    } else { /* caso transmit */
       ((termreg_t *)reg)->transm_command = command; /* Imposta il carattere da trasmettere e fa partire l'operazione di stampa su terminale */
-
       while ((((termreg_t *)reg)->transm_status & TERM_STATUS_MASK) == TERM_ST_BUSY); /* Aspetta finchè lo stato del terminale non è più "BUSY" */
-
       passeren(semaphore);
-
       while ((((termreg_t *)reg)->transm_status & TERM_STATUS_MASK) != DEV_S_READY); /* Aspetta finchè lo stato del terminale non è "READY" */
-
       return ((termreg_t *)reg)->transm_status;
     }
   }

@@ -54,8 +54,8 @@ void disk_handler(){
 		if (pending){ /* ...per ognuno di questi faccio l'ack dopo averne trovato l'indirizzo */
 			unsigned int device_addr = DEV_REG_ADDR(INT_DISK, device);
 			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
-			pcb = verhogen_2(&device_semaphore[device]);
-			if (pcb) pcb->p_s.reg_v0 = ((dtpreg_t *)device_addr)->status;
+			pcb = verhogen_2(&device_semaphore[device]); /* sblocco eventuali processi bloccati sul semaforo del device e aggiorno il semaforo */
+			if (pcb) pcb->p_s.reg_v0 = ((dtpreg_t *)device_addr)->status; /* aggiorno il registro v0 del processo sbloccato */
 		}
 	}
 
@@ -77,8 +77,8 @@ void tape_handler(){
 		if (pending){ /* ...per ognuno di questi faccio l'ack dopo averne trovato l'indirizzo */
 			unsigned int device_addr = DEV_REG_ADDR(INT_TAPE, device);
 			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
-			pcb = verhogen_2(&device_semaphore[DEV_PER_INT + device]);
-			if (pcb) pcb->p_s.reg_v0 = ((dtpreg_t *)device_addr)->status;
+			pcb = verhogen_2(&device_semaphore[DEV_PER_INT + device]); /* sblocco eventuali processi bloccati sul semaforo del device e aggiorno il semaforo */
+			if (pcb) pcb->p_s.reg_v0 = ((dtpreg_t *)device_addr)->status; /* aggiorno il registro v0 del processo sbloccato */
 		}
 	}
 
@@ -99,9 +99,9 @@ void network_handler(){
 		pending = *((uint32_t *)pending) << (1 << device);
 		if (pending){ /* ...per ognuno di questi faccio l'ack dopo averne trovato l'indirizzo */
 			unsigned int device_addr = DEV_REG_ADDR(INT_NETWORK, device);
-			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
-			pcb = verhogen_2(&device_semaphore[2 * DEV_PER_INT + device]);
-			if (pcb) pcb->p_s.reg_v0 = ((dtpreg_t *)device_addr)->status;
+			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK; 
+			pcb = verhogen_2(&device_semaphore[2 * DEV_PER_INT + device]); /* sblocco eventuali processi bloccati sul semaforo del device e aggiorno il semaforo */
+			if (pcb) pcb->p_s.reg_v0 = ((dtpreg_t *)device_addr)->status; /* aggiorno il registro v0 del processo sbloccato */
 		}
 	}
 
@@ -122,9 +122,9 @@ void printer_handler(){
 		pending = *((unsigned int *)pending) << (1 << device);
 		if (pending){ /* ...per ognuno di questi faccio l'ack dopo averne trovato l'indirizzo */
 			unsigned int device_addr = DEV_REG_ADDR(INT_PRINTER, device);
-			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK;
-			pcb = verhogen_2(&device_semaphore[3 * DEV_PER_INT + device]);
-			if (pcb) pcb->p_s.reg_v0 = ((dtpreg_t *)device_addr)->status;
+			((dtpreg_t *)device_addr)->command = (uint8_t) DEV_C_ACK; 
+			pcb = verhogen_2(&device_semaphore[3 * DEV_PER_INT + device]); /* sblocco eventuali processi bloccati sul semaforo del device e aggiorno il semaforo */
+			if (pcb) pcb->p_s.reg_v0 = ((dtpreg_t *)device_addr)->status; /* aggiorno il registro v0 del processo sbloccato */
 		}
 	}
 
@@ -148,8 +148,8 @@ void terminal_handler(){
 
 			/* Caso receive */
 			if((((termreg_t *)device_addr)->recv_status != TERM_ST_BUSY) && (((termreg_t *)device_addr)->recv_status !=  DEV_S_READY)){
-			  pcb = verhogen_2(&terminal_semaphore[device][1]);
-			  if (pcb) pcb->p_s.reg_v0 = ((termreg_t *)device_addr)->recv_status;
+			  pcb = verhogen_2(&terminal_semaphore[device][1]); /* sblocco eventuali processi bloccati sul semaforo del device e aggiorno il semaforo */
+			  if (pcb) pcb->p_s.reg_v0 = ((termreg_t *)device_addr)->recv_status; /* aggiorno il registro v0 del processo sbloccato (prima dell'ack) */
 			  ((termreg_t *)device_addr)->recv_command = DEV_C_ACK; /* Faccio l'ack */
 			  while((((termreg_t *)device_addr)->recv_status & TERM_STATUS_MASK) != DEV_S_READY) /* Aspetta finchè lo stato del terminale non è "READY" */
 					;
@@ -157,8 +157,8 @@ void terminal_handler(){
 
 			/* Caso transmit */
 			if((((termreg_t *)device_addr)->transm_status != TERM_ST_BUSY) && (((termreg_t *)device_addr)->transm_status != DEV_S_READY)){
-			  	pcb = verhogen_2(&terminal_semaphore[device][0]);
-				if (pcb) pcb->p_s.reg_v0 = ((termreg_t *)device_addr)->transm_status;
+			  pcb = verhogen_2(&terminal_semaphore[device][0]); /* sblocco eventuali processi bloccati sul semaforo del device e aggiorno il semaforo */
+			  if (pcb) pcb->p_s.reg_v0 = ((termreg_t *)device_addr)->transm_status; /* aggiorno il registro v0 del processo sbloccato (prima dell'ack)*/
 				((termreg_t *)device_addr)->transm_command = DEV_C_ACK; /* Faccio l'ack */
 				while((((termreg_t *)device_addr)->transm_status & TERM_STATUS_MASK) != DEV_S_READY) /* Aspetta finchè lo stato del terminale non è "READY" */
 					;

@@ -1,6 +1,7 @@
 #ifndef _INTERRUPT_H
 #define _INTERRUPT_H
 
+#define DEV_ST_BUSY          3
 #define TERM_ST_BUSY         3
 #define TERM_ST_TRANSMITTED  5
 #define TERM_STATUS_MASK     0xFF
